@@ -20,5 +20,6 @@
     "multi-agent"
   ],
   "icon": "./.claude-plugin/icon.png",
-  "privacyPolicyUrl": "https://github.com/Kazap/claude-plugins/blob/main/plugins/adversarial/PRIVACY.md"
+  "privacyPolicyUrl": "https://github.com/Kazap/claude-plugins/blob/main/plugins/adversarial/PRIVACY.md",
+  "supportUrl": "https://github.com/Kazap/claude-plugins/issues"
 }

@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <!-- Notion-style line icon: three nested shields (layers of review) around a check, in the Kazap
-       colors on a white tile. The PNG at plugins/adversarial/.claude-plugin/icon.png is rendered from this. -->
-  <rect x="0" y="0" width="1024" height="1024" rx="228" fill="#ffffff"/>
-  <rect x="6" y="6" width="1012" height="1012" rx="222" fill="none" stroke="#e6e3ef" stroke-width="12"/>
+       colors on a square white background; the host applies its own corner mask. The PNG at
+       plugins/adversarial/.claude-plugin/icon.png is rendered from this. -->
+  <rect x="0" y="0" width="1024" height="1024" fill="#ffffff"/>
   <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="44">
     <path d="M512.0 170.0 C620.0 218.3 740.0 252.8 812.0 259.7 V487.4 C812.0 680.6 632.0 791.0 512.0 860.0 C392.0 791.0 212.0 680.6 212.0 487.4 V259.7 C284.0 252.8 404.0 218.3 512.0 170.0 Z" stroke="#8b5cf6" fill="none" />
     <path d="M512.0 251.1 C589.8 285.9 676.2 310.7 728.0 315.7 V479.7 C728.0 618.8 598.4 698.4 512.0 748.1 C425.6 698.4 296.0 618.8 296.0 479.7 V315.7 C347.8 310.7 434.2 285.9 512.0 251.1 Z" stroke="#6747df" fill="none" />
