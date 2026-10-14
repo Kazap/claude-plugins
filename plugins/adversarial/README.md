@@ -1,4 +1,4 @@
-# adversarial
+# Kazap Adversarial Review
 
 A Claude Code plugin with one command, `/adversarial:review [path] [--fix]`. It assembles a panel
 of up to 6 read-only reviewers, each with a question calibrated to the content, sends critical and
