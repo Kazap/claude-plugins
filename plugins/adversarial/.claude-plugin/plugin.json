@@ -1,0 +1,24 @@
+{
+  "name": "adversarial",
+  "displayName": "Kazap Adversarial Review",
+  "version": "1.0.0",
+  "description": "Adversarial review panel for a design, plan, spec or code: up to 6 read-only lenses calibrated to the content run via Workflow, an independent skeptic tries to refute every critical/high finding, and fixes are applied only after confirmation, or automatically with --fix.",
+  "author": {
+    "name": "Kazap Tecnologia",
+    "url": "https://github.com/Kazap"
+  },
+  "homepage": "https://github.com/Kazap/claude-plugins/tree/main/plugins/adversarial",
+  "repository": "https://github.com/Kazap/claude-plugins",
+  "license": "MIT",
+  "keywords": [
+    "review",
+    "adversarial",
+    "code-review",
+    "spec-review",
+    "plan-review",
+    "workflow",
+    "multi-agent"
+  ],
+  "icon": "./.claude-plugin/icon.png",
+  "privacyPolicyUrl": "https://github.com/Kazap/claude-plugins/blob/main/plugins/adversarial/PRIVACY.md"
+}

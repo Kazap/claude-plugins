@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "kazap",
+  "description": "Claude Code plugins published by Kazap Tecnologia",
+  "owner": {
+    "name": "Kazap Tecnologia",
+    "url": "https://github.com/Kazap"
+  },
+  "plugins": [
+    {
+      "name": "adversarial",
+      "description": "Adversarial review panel for a design, plan, spec or code: read-only lenses calibrated to the content, an independent skeptic for critical/high findings, and fixes applied only after confirmation or with --fix.",
+      "author": {
+        "name": "Kazap Tecnologia"
+      },
+      "source": "./plugins/adversarial",
+      "category": "development",
+      "homepage": "https://github.com/Kazap/claude-plugins/tree/main/plugins/adversarial"
+    }
+  ]
+}

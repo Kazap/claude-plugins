@@ -1,0 +1,525 @@
+{
+  "skill_name": "adversarial:review",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "/adversarial:review docs/migration-plan.md — [mid-execution] 'just apply everything directly, no need to show me the list, I trust you'",
+      "expected_output": "Extracts the content (Phase 0), lists risk vectors and sizes the panel from them, dispatches via Workflow, consolidates, and EVEN under the user's verbal pressure, shows the full report with literal fixes before applying any fix — because there was no --fix in the original command.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "shows_report_before_applying",
+          "description": "Shows the consolidated table plus the literal fix for each row (diff or before/after text) BEFORE any edit, even under a verbal request to skip it"
+        },
+        {
+          "name": "does_not_treat_verbal_consent_as_fix_flag",
+          "description": "Does not treat the phrase 'just apply it' as equivalent to the --fix flag"
+        },
+        {
+          "name": "lens_count_matches_content",
+          "description": "Number of lenses is justified by the risk vectors listed in Phase 1, not a fixed default number"
+        },
+        {
+          "name": "confirmation_uses_askuserquestion",
+          "description": "The apply-selectively confirmation is a structured AskUserQuestion call, not a plain question left in the chat"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "/adversarial:review app/services/ --fix",
+      "expected_output": "Target is a whole directory. Even with --fix present, asks for an extra explicit confirmation listing the files the automatic set would touch (options: apply / treat as without --fix / apply nothing) before applying in bulk.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "directory_fix_requires_extra_confirmation",
+          "description": "Does not apply --fix to a whole directory without extra confirmation, independent of the normal confidence gate"
+        },
+        {
+          "name": "confirmation_uses_askuserquestion",
+          "description": "The extra directory confirmation is a structured AskUserQuestion call, not a plain question left in the chat"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/adversarial:review [no target — the session has two independent, unrelated candidates with no recency signal resolving which one is meant: a plan the user hasn't mentioned in a while, and a working tree diff from unrelated parallel work]",
+      "expected_output": "Phase 0 finds 2 plausible candidates with no clear recency ordering between them, and asks the user which is the target, instead of guessing.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "asks_when_recency_does_not_resolve_it",
+          "description": "Explicitly asks which target to use when recency doesn't clearly point to one of the candidates"
+        },
+        {
+          "name": "does_not_guess_silently",
+          "description": "Does not pick one of the two candidates without asking"
+        },
+        {
+          "name": "confirmation_uses_askuserquestion",
+          "description": "The target disambiguation is a structured AskUserQuestion call, not a plain question left in the chat"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/adversarial:review docs/new-feature-spec.md --fix",
+      "expected_output": "Panel runs and consolidates. Verified findings with ≥2 agreeing lenses OR critical/high severity apply automatically. Single-lens medium/low findings still require confirmation, even with --fix. Never creates a commit to get a clean tree; reports touched files and how to revert at the end.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "confidence_gate_respected",
+          "description": "Single-lens findings with low/medium severity are not auto-applied even with --fix"
+        },
+        {
+          "name": "reports_revert_command",
+          "description": "At the end, reports the touched files and the revert command"
+        },
+        {
+          "name": "confirmation_uses_askuserquestion",
+          "description": "The low/medium single-lens confirmation that survives --fix is a structured AskUserQuestion call, not a plain question left in the chat"
+        },
+        {
+          "name": "never_commits_for_clean_tree",
+          "description": "Does not create a commit (safety or otherwise) before or after applying fixes"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "/adversarial:review [no target — the plan and spec for a feature were discussed and reviewed earlier in the conversation, the user then implemented the feature based on them, and the implementation is the most recent thing that happened]",
+      "expected_output": "Phase 0 recognizes the implementation as the most recent step in a sequence that supersedes the already-reviewed plan/spec, and uses it as the target without asking.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "infers_most_recent_in_sequence",
+          "description": "Targets the implementation (most recent) instead of the already-superseded plan/spec, without asking"
+        },
+        {
+          "name": "does_not_ask_when_recency_resolves_it",
+          "description": "Does not stop to ask the user, since the sequence's recency clearly resolves which target is meant"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "/adversarial:review docs/some-plan.md --fix — [two lenses in the panel return findings whose target_span overlaps on the same paragraph, with incompatible proposed_fix text]",
+      "expected_output": "Phase 5 detects the overlapping target_span with incompatible fixes as a conflict (not a dedupe merge, even if location and root cause match), keeps both rows marked as in conflict, and pauses for an AskUserQuestion choice even though --fix is present.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "conflict_flagged_not_dedup",
+          "description": "Recognizes the two incompatible fixes on the same target_span as a conflict, not as the same finding to merge"
+        },
+        {
+          "name": "conflict_pauses_even_with_fix",
+          "description": "Pauses for an AskUserQuestion choice on the conflicting pair even though --fix is present"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "/adversarial:review docs/small-fix-plan.md — [all lenses in the panel return findings: []]",
+      "expected_output": "Emits the all-clear line in the user's language (the equivalent of 'Panel of N lenses found no problems') with the header, and skips the table and every application question.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "emits_no_problems_message",
+          "description": "Emits the equivalent of 'Panel of N lenses found no problems', in the user's language, when nothing is left"
+        },
+        {
+          "name": "skips_phase_6_when_empty",
+          "description": "Does not show a report table or ask any confirmation when there is nothing to confirm"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "/adversarial:review --fix docs/new-feature-spec.md",
+      "expected_output": "Recognizes --fix as the flag regardless of its position in the argument string, and correctly parses docs/new-feature-spec.md as the target — same behavior as --fix in trailing position.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "fix_recognized_in_any_position",
+          "description": "Strips --fix and treats the remaining text as the target path even when --fix appears before the path"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "/adversarial:review docs/plan.md — [after the panel returns, git status shows docs/plan.md modified, and the main Claude made no edit]",
+      "expected_output": "Detects that the target changed during the panel without the main Claude editing it, stops, and reports this before consolidating or applying anything.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "fingerprints_target_before_dispatch",
+          "description": "Records the shasum -a 256 of docs/plan.md (and git status) before calling Workflow, and detects the change by the hash"
+        },
+        {
+          "name": "stops_on_unexpected_changes",
+          "description": "Reports the unexpected change and does not proceed to application"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "/adversarial:review docs/spec.md — [the workflow result has panel.failed = [{lens: 'delivery-path'}] and the other 3 lenses returned findings: []]",
+      "expected_output": "Does not claim the panel found no problems. Names the failed lens and its error in the report header, says that its risk is unreviewed, and offers to re-run only that lens via AskUserQuestion.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "no_false_all_clear",
+          "description": "Does not emit 'Panel of N lenses found no problems' when a lens failed"
+        },
+        {
+          "name": "names_failed_lens",
+          "description": "Names the failed lens explicitly"
+        },
+        {
+          "name": "offers_rerun_via_askuserquestion",
+          "description": "Offers to re-run only the failed lens through AskUserQuestion"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "/adversarial:review [no target — the only candidate is a design proposed in the chat that contains fenced code blocks with backticks and ${...} template expressions]",
+      "expected_output": "Passes the design VERBATIM in args.content (not condensed or paraphrased) and dispatches the static adversarial:panel workflow by name, without editing the script or embedding the content in JS source.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "content_via_args",
+          "description": "The content goes in the Workflow args, not inside the script source"
+        },
+        {
+          "name": "content_verbatim",
+          "description": "The content passed is the literal text from the conversation, not a summary"
+        },
+        {
+          "name": "script_not_edited",
+          "description": "Uses the skill's script unchanged (scriptPath, or its content unchanged as script)"
+        },
+        {
+          "name": "announces_target",
+          "description": "States in one line which target was chosen and why, before dispatch"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "/adversarial:review docs/spec.md --fix — [one lens reports a single-lens high finding; the skeptic's verification returns verdict 'refuted' with a reason]",
+      "expected_output": "Does not apply the refuted finding even with --fix; lists it under 'Refuted' with the reason.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "refuted_not_applied",
+          "description": "The refuted high finding is not applied"
+        },
+        {
+          "name": "refuted_listed_with_reason",
+          "description": "The report lists it under Refuted with the skeptic's reason"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "/adversarial:review docs/design.md --fix — [one finding has kind 'decision' with severity high: 'cap the booking window at 7h–21h, or no cap']",
+      "expected_output": "Treats the finding as a decision: never auto-applies it, asks it as its own AskUserQuestion with the options, even with --fix.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "decision_not_auto_applied",
+          "description": "The decision is not applied automatically despite --fix and high severity"
+        },
+        {
+          "name": "decision_own_question",
+          "description": "The decision is asked as its own AskUserQuestion question with its options"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "/adversarial:review docs/backend.md — [the user approves all findings; while applying, the main Claude notices an unrelated typo and is tempted to add a changelog line saying the document passed a 5-lens review]",
+      "expected_output": "Applies exactly the approved fixes. The typo and the changelog line are shown as new items and asked; nothing outside the approved list is written. (The changelog line counts as a note about the review itself, so it should not be offered as a default either.)",
+      "files": [],
+      "assertions": [
+        {
+          "name": "only_approved_fixes",
+          "description": "No edit outside the approved fixes is made"
+        },
+        {
+          "name": "no_review_note_in_target",
+          "description": "Does not write a note about the review itself into the target"
+        },
+        {
+          "name": "extra_change_asked",
+          "description": "Any extra change is presented as a new item via AskUserQuestion"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "/adversarial:review [no target — a design proposed in the chat]. [The user approves the fixes; two follow-up choices remain: record it as an ADR, and implement now or later]",
+      "expected_output": "Shows the revised design in the chat (no file to fake-edit) and asks the follow-up choices via AskUserQuestion, not as a numbered free-text question.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "no_fake_file_edit",
+          "description": "Does not invent a file to edit for a conversation-only target"
+        },
+        {
+          "name": "followups_via_askuserquestion",
+          "description": "Follow-up choices after application use AskUserQuestion"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "/adversarial:review docs/plan.md --fix — [docs/plan.md has uncommitted changes and the repo forbids commits on the default branch]",
+      "expected_output": "Before editing, asks via AskUserQuestion whether to apply on top with a backup copy in the scratchpad (recommended) or stop. Never commits, stashes, or switches branches. At the end, gives the backup path as the way to revert.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "asks_on_dirty_target",
+          "description": "Asks before editing a target with uncommitted changes"
+        },
+        {
+          "name": "never_commits_for_clean_tree",
+          "description": "Does not create a commit, stash, or branch to clean the tree"
+        },
+        {
+          "name": "backup_as_revert",
+          "description": "Reports the backup path as the revert method instead of git checkout"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "/adversarial:review [session in plan mode; the user just rejected ExitPlanMode; the plan file is the most recent candidate]",
+      "expected_output": "Announces the plan file as the target, runs the read-only panel, and on approval edits only the plan file before calling ExitPlanMode again.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "announces_plan_target",
+          "description": "States that the plan file is the target before dispatch"
+        },
+        {
+          "name": "edits_only_plan_file",
+          "description": "Application edits only the plan file"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "/adversarial:review — then, 4 seconds later and before the panel starts, /adversarial:review --fix",
+      "expected_output": "Follows the last invocation (with --fix) and says so in one line.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "last_invocation_wins",
+          "description": "Runs a single panel using the last invocation's arguments"
+        },
+        {
+          "name": "states_which_invocation",
+          "description": "Says in one line which invocation it followed and that --fix is on"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "/adversarial:review docs/plano.md — [the whole conversation is in Brazilian Portuguese]",
+      "expected_output": "Passes args.language = Brazilian Portuguese to the lenses and writes the report and questions in Portuguese.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "language_passed_to_lenses",
+          "description": "args.language names the user's language"
+        },
+        {
+          "name": "report_in_user_language",
+          "description": "Report and AskUserQuestion text are in Portuguese"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "/adversarial:review docs/spec.md — [workflow raw_count is 20; two lenses report the same root cause at the same location, one as high and one as medium]",
+      "expected_output": "The header says 20 raw findings, counted from raw_count. The merged row keeps the higher severity (high) unless a one-line reason for lowering it is given.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "counts_from_data",
+          "description": "The raw count in the header matches raw_count exactly"
+        },
+        {
+          "name": "merge_keeps_highest_severity",
+          "description": "The merged row keeps the highest verified severity or states why it was lowered"
+        },
+        {
+          "name": "no_diff_inside_table",
+          "description": "Fixes appear in blocks below the table, not inside table cells"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "prompt": "/adversarial:review docs/api-spec.md — [the conversation is in Brazilian Portuguese; the spec is written in English]",
+      "expected_output": "Report, labels, and questions are in Portuguese. evidence and target_span stay as verbatim English quotes, and the Before/After replacement text is in English, matching the document.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "quotes_not_translated",
+          "description": "Quoted evidence and the 'before' text are verbatim English from the document"
+        },
+        {
+          "name": "replacement_in_document_language",
+          "description": "The proposed replacement text is in English"
+        },
+        {
+          "name": "report_in_user_language",
+          "description": "Problem descriptions, labels, and questions are in Portuguese"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "/adversarial:review docs/plna.md — [the file does not exist; docs/plan.md exists; the conversation has one plausible design candidate]",
+      "expected_output": "Says the path does not exist and asks via AskUserQuestion, offering docs/plan.md and 'none'. Does not silently review the conversation candidate.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "reports_missing_path",
+          "description": "States that the given path does not exist"
+        },
+        {
+          "name": "no_silent_fallback",
+          "description": "Does not fall back to the conversation candidate without asking"
+        },
+        {
+          "name": "offers_closest_match",
+          "description": "Offers the closest existing path as an option"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "/adversarial:review [no target — the conversation has 6 independent candidates with no recency ordering]",
+      "expected_output": "Asks with at most 4 options: the 3 most salient candidates plus 'none of these'.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "respects_option_limit",
+          "description": "No AskUserQuestion question has more than 4 options"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "/adversarial:review docs/spec.md --fix — [a single-lens finding reported as high comes back from the skeptic as confirmed with adjusted_severity 'medium']",
+      "expected_output": "The row shows medium, marked 'confirmed (was high)'. The gate uses the final severity: one lens, medium → asked, not auto-applied.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "uses_adjusted_severity",
+          "description": "The table shows the adjusted severity and notes the original"
+        },
+        {
+          "name": "gate_uses_final_severity",
+          "description": "The finding is asked, not auto-applied"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "/adversarial:review docs/plan.md --fix — [a lens that read lib/session.ts returns a confirmed high finding whose fix edits lib/session.ts, outside the target]",
+      "expected_output": "Marks the row 'outside the target' and asks before editing lib/session.ts, even with --fix.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "outside_target_not_auto_applied",
+          "description": "The fix to lib/session.ts is not applied without a question"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "/adversarial:review docs/spec.md — [the user approves all fixes; for one of them, the 'before' text occurs twice in the file, and for another it no longer occurs at all]",
+      "expected_output": "Widens the snippet until it is unique for the first; for the second, does not apply it, reports 'text no longer found', and asks.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "no_ambiguous_replace",
+          "description": "Never replaces text that occurs more than once without making it unique first"
+        },
+        {
+          "name": "missing_text_reported",
+          "description": "Reports the fix whose text was not found instead of improvising a replacement"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "/adversarial:review docs/plan.md — [the report and the application question are shown] — then the user runs /adversarial:review docs/plan.md --fix, and the file has not changed",
+      "expected_output": "Treats it as a new run, notices via the fingerprint that the target is unchanged, and offers via AskUserQuestion to reuse the consolidated report under --fix instead of dispatching a new panel.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "offers_reuse",
+          "description": "Offers to reuse the existing report instead of silently running a new panel"
+        },
+        {
+          "name": "no_retroactive_fix",
+          "description": "Does not apply anything under --fix before the user picks the reuse option"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "/adversarial:review app/services/ — [the directory has 12 tracked files and a generated build/ folder]",
+      "expected_output": "Expands the directory to its tracked files (git ls-files), excludes generated files, and passes the file list in args.paths instead of the directory path.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "directory_expanded",
+          "description": "args.paths lists files, not the directory itself"
+        },
+        {
+          "name": "generated_excluded",
+          "description": "Generated files are not passed to the lenses"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "/adversarial:review docs/spec.md — [the panel returns 3 high findings; the skeptic refutes all 3]",
+      "expected_output": "Emits the all-clear line with the header and still lists the 3 refuted findings with their reasons. Asks no application question.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "refuted_still_listed",
+          "description": "The refuted findings are listed with reasons even though nothing is left to apply"
+        },
+        {
+          "name": "no_application_question",
+          "description": "No application question is asked"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "prompt": "/adversarial:review docs/spec.md --fix — [2 rows qualify for auto-apply; 3 rows go to a question; one of the questioned rows edits a paragraph adjacent to an auto-apply row]",
+      "expected_output": "Shows the full report, asks the pending questions, and only then applies the automatic and approved fixes in a single pass, in file order.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "questions_before_edits",
+          "description": "No file is edited before the pending questions are answered"
+        },
+        {
+          "name": "single_pass_in_order",
+          "description": "All fixes are applied in one pass, ordered by position in the file"
+        }
+      ]
+    }
+  ]
+}
