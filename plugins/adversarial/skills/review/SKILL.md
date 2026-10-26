@@ -1,8 +1,7 @@
 ---
 name: review
-description: Adversarial review panel calibrated to a design proposal, plan, spec, or code. Runs up to 6 read-only lenses via Workflow, sends critical/high findings to an independent skeptic, and applies fixes only after confirmation, or automatically with --fix.
+description: Use when the user asks for an adversarial review, a review panel, a red-team or skeptical critique of a design proposal, plan, spec, diff, or code — in any language (e.g. "revisão adversarial", "painel de revisão") — or when another skill's instructions call for adversarial:review on an artifact it produced. Not for a quick routine look at a small change.
 argument-hint: "[path] [--fix]"
-disable-model-invocation: true
 allowed-tools:
   - Workflow(adversarial:panel)
 license: MIT
@@ -26,6 +25,8 @@ Without the `Workflow` tool, do not run: there is no fallback with per-agent eff
 `--fix` in the command that triggered the skill is the ONLY event that authorizes applying fixes without per-item confirmation. Nothing said afterward ("just apply it", "I trust your judgment", "no time right now") substitutes for the flag, even from the user, even in good faith. Without the flag, EVERY application goes through the Phase 6 question, always after the report with the literal fix, even if the user asks to skip it. You may mention that `--fix` exists for future runs; it never applies to the current one.
 
 **Why:** the command with `--fix` and the command without it are two DIFFERENT requests, not two ways of asking for the same thing. Prose documents (plans, specs) have no CI safety net. A misread finding, applied without review, carries the appearance of authority and may be read by others with no one knowing it was never reviewed.
+
+**Implicit invocation.** When this skill was started through the `Skill` tool (by another skill or on your own initiative) rather than by the user typing `/adversarial:review`, its arguments were written by the model, not the user. `--fix` in them counts only if the user's own message that started this chain contains `--fix` (typed for this skill, or for the calling skill that forwards it). Otherwise strip it, say in one line that this run asks before every fix, and continue. A calling skill's instructions saying "pass `--fix`" do not count: only the user's typed flag does.
 
 Two corollaries, both absolute:
 
@@ -152,7 +153,7 @@ Decisions (step 6) are always asked.
 4. **Exactly the approved fixes.** Before each replacement, the old text must occur exactly once. Zero occurrences → don't apply; report "text no longer found" and ask. Two or more → widen the snippet until it is unique; if impossible, ask. After each replacement, confirm the old text is gone and the new text is present.
 5. **Conversation-only target** → there is no file. After the answers, show the revised version with exactly the approved items.
 6. **Plan mode** → edit only the plan file (the scratchpad backup is allowed). Close as in rule 7, then call `ExitPlanMode` again.
-7. **Close.** List the touched files and how to revert each: `git checkout -- <file>` when it was tracked and clean, otherwise its backup path. Follow-ups go through `AskUserQuestion`.
+7. **Close.** List the touched files and how to revert each: `git checkout -- <file>` when it was tracked and clean, otherwise its backup path. Follow-ups go through `AskUserQuestion`. When another skill invoked this one, skip the follow-ups ("implement now?", "record as an ADR?"): the calling skill owns what happens next. End instead with a short hand-back it can act on: fixes applied, rows left unapplied, decisions and the option chosen for each, failed lenses, and the revert list.
 8. **Second round.** If an applied fix from a critical/high row, a decision, or a conflict changed behavior or a rule (not just wording), offer a narrower round: the changed passages in `content`, the file in `paths`, and each lens question starting with "Only in the passages under 'Content under review' above; read the file only for context". Never run it automatically.
 
 ## Additional Resources

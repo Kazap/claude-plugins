@@ -26,6 +26,13 @@ claude plugin validate .
 node tests/adversarial/test-panel-workflow.mjs
 ```
 
+Behavior evals run real models, so they cost tokens (about US$ 0.10 per run for `adversarial`).
+Run them from the repository root, so the cases can load the plugin from `plugins/`:
+
+```
+claude plugin eval . --eval-dir tests/adversarial/evals --ablation none --scaffold --allow-tools Edit Write
+```
+
 The Claude plugin directory lists each plugin from a mirror repository that holds only that
 plugin's folder, at its root. A plugin in a subfolder has every version held for a reviewer when
 it ships scripts the validator can't follow, such as a Workflow script, and moving the plugins to

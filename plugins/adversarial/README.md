@@ -25,6 +25,16 @@ Requires the Workflow tool (multi-agent script orchestration) in Claude Code.
 Reports and questions come in the language of the conversation. Quotes from the target stay
 verbatim.
 
+### From another skill
+
+Claude can also start the review on its own, and other skills can call it: tell Claude, in the
+calling skill's instructions, to invoke the `adversarial:review` skill with the target path (for
+example, "when the document is written, run the `adversarial:review` skill on it"). When it is
+called this way, `--fix` only counts if the user typed it in their own command; a flag added by
+the calling skill is ignored, and every fix goes through a question. At the end, the review hands
+back a summary (applied fixes, open rows, decisions, revert list) instead of asking follow-ups, so
+the calling skill can continue.
+
 ## When to use this plugin and when to use another
 
 Fixed-checklist tools give cheap, guaranteed coverage. This plugin trades that for depth
@@ -53,6 +63,9 @@ one for the other.
 - The workflow's tests live outside this folder, in Kazap/claude-plugins' `tests/adversarial/`, so
   they are not installed: `node tests/adversarial/test-panel-workflow.mjs` from that repository's
   root runs them with simulated agents, no tokens.
+- Behavior cases for `claude plugin eval` live in Kazap/claude-plugins' `tests/adversarial/evals/`:
+  the skill starts from a plain request, and a calling skill can start it without its `--fix` being
+  honored. See that repository's README for the command.
 
 ## What the plugin runs
 
