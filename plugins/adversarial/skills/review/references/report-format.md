@@ -55,6 +55,7 @@ Never a description of the change ("tighten the wording of §5.5").
 - **Decisions:** `D1`, `D2`… One line each with the question and the options, recommended first.
 - **Conflicts:** which rows, and what each fix would leave in place. A reconciling option you wrote is labeled as yours.
 - **Refuted:** one line each: the problem, who refuted it, and why.
+- **Repeated** and **Handed back** (only when a calling skill sent settled points or hand-back categories): one line each with the problem and the settled point's ID or the category, under a heading that says the calling skill will handle them. They are not in the table and get no question here.
 
 ## 5. Questions
 

@@ -35,6 +35,18 @@ the calling skill is ignored, and every fix goes through a question. At the end,
 back a summary (applied fixes, open rows, decisions, revert list) instead of asking follow-ups, so
 the calling skill can continue.
 
+The calling skill's instructions can also hand the review:
+
+- **required lenses** (`{key, question, effort?}`), included as given;
+- **facts** it already verified, and **references** to read for context but not review;
+- **settled points**: findings that contest one without a new fact are listed as repeated, not asked;
+- a **scope** of passages for a narrow round;
+- **hand-back categories**: findings of those kinds are verified but returned to the caller unasked,
+  so it can treat them with its own rules.
+
+The caller owns the loop: the review does not offer a second round, and its summary says which
+applied fixes changed a rule.
+
 ## When to use this plugin and when to use another
 
 Fixed-checklist tools give cheap, guaranteed coverage. This plugin trades that for depth

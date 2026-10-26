@@ -43,6 +43,21 @@ Two corollaries, both absolute:
 | "This isn't disobeying, it's applying senior judgment" | Senior judgment HERE is showing the report before touching any file. |
 | "It's a tiny extra correction right next to an approved one" | Approval covers the listed fix, not its neighborhood. Show it as a new item. |
 
+## When another skill calls this one
+
+The calling skill's instructions are already in this conversation. They may hand over any of the items below; use each one exactly as given and name, in the target announcement (Phase 0 step 4), which ones arrived. Nothing here relaxes the `--fix` rule, the read-only panel, or the gate.
+
+| Item | What you do with it |
+|---|---|
+| **Required lenses** `{key, question, effort?}` | Include them verbatim in Phase 2. They count toward the limit of 6 and are never "invented" lenses; fill the remaining slots from Phase 1. |
+| **Facts** the caller verified, each with its source | Add them to `args.facts` next to yours. Do not re-verify them; your own facts still follow Phase 0 step 6. |
+| **References** (files to read for context, not to review) | Never in `paths`. Name each in `args.facts` as "reference, not a review target". |
+| **Settled points** (an ID and what was decided) | Phase 5 step 4, "Repeated": a finding that contests one without bringing a fact the decision did not have is "Repeated". |
+| **Scope** (passages, by ID or heading) | A narrow round: every lens question starts as in Phase 6 rule 8. |
+| **Hand-back categories** (finding types the caller asks about itself) | Phase 5 step 4, "Handed back": matching findings are consolidated and verified, but never asked or applied here. |
+
+**Hand-back.** The run ends with the summary in Phase 6 rule 7, which the caller acts on. The caller owns the loop: do not offer a second round (rule 8) and do not ask follow-ups.
+
 ## Every pending decision uses a structured question
 
 Target disambiguation, application choices, conflicts, decisions, re-runs, and the follow-ups after application ("implement now?", "record as an ADR?") all go through `AskUserQuestion`, never as a plain-text question. A paragraph ending in a question mark is easy to skim past, and a one-word reply to it ("1") is easy to over-read.
@@ -84,7 +99,7 @@ Classify the content: design proposal / plan-spec / code / diff / mixed. Then li
 
 ### Phase 2 — Assemble the panel
 
-One lens per independent risk vector, at most 6; above that, merge the most correlated. Fewer than 3 genuinely distinct vectors → say why in one line and run with 1 or 2 lenses. Never invent an artificial lens to reach 3.
+One lens per independent risk vector, at most 6; above that, merge the most correlated. Fewer than 3 genuinely distinct vectors → say why in one line and run with 1 or 2 lenses. Never invent an artificial lens to reach 3. Lenses required by a calling skill are included as given and count toward the 6.
 
 Each lens is `{key, question}`. The question names a concrete fact about THIS content and tells the lens what to open, never a bare category like "security". Keys and questions may be in the user's language. See `references/persona-patterns.md`.
 
@@ -118,13 +133,15 @@ In this order:
    - Medium/low about wording or internal consistency: confirm the quote exists in the target AND that the problem holds when you read the passage in context.
    - Decisions don't go to the skeptic. Confirm the quote exists and that the choice is real; a decision whose premise doesn't hold is refuted.
    - A lens that returned only a description of the fix: write the literal text yourself and mark the row "fix written by me".
+   - **Repeated** (only with settled points from a caller). A finding that contests a settled point without a fact the decision did not have leaves the table and goes to "Repeated" with the point's ID. It is not asked and not applied.
+   - **Handed back** (only with hand-back categories from a caller). A finding that matches a category leaves the table and goes to "Handed back", with its category, severity, verification, problem, location, evidence and proposed fix. It is not asked and not applied. When in doubt whether it matches, hand it back.
 5. **Dedupe or conflict.** Two findings at the same location with the same root cause (semantic judgment, not string match):
    - Compatible fixes (same effect, or one contains the other) → merge into one row, keeping the most complete fix and every agreeing lens. The row keeps the HIGHEST verified severity for the report; lowering it requires a one-line reason. For the gate, the row inherits the verification of the finding whose fix was kept (if that one is unverified, the row is unverified), and "Lenses" counts only the lenses whose own fix has the same effect as the kept one; a lens whose fix is only contained in it does not count toward line 7. If the kept fix comes from a medium/low finding, line 6 does not apply to it even when a merged sibling was critical/high.
    - Incompatible fixes → a conflict (step 7), never a merge. Deleting a passage and rewriting the same passage are incompatible.
    - "Lenses" on a row counts only the lenses that agree on the fix, not just on the problem.
 6. **Decisions.** `kind: decision`, or a finding whose fix offers alternatives, goes to "Decisions" with its own number (D1, D2…), outside the table. Decisions are never auto-applied and never covered by a bulk option.
 7. **Conflicts.** Two fixes that cannot both be applied as written, whether on the same `target_span` or not (incompatible rules in different paragraphs count). This includes a row whose fix touches the passage of a decision, or presupposes one of its options. Both rows stay in the table, marked as in conflict (or as "depends on D<n>"), and leave any automatic set until the user answers. You may offer a reconciling option you write yourself, labeled as yours. Alternatives inside a single finding are a decision, not a conflict.
-8. **Empty.** No row and no decision left, and every lens ran → the all-clear line in the user's language ("Panel of N lenses found no problems"), plus the header and the "Refuted" list if any, and skip the rest of Phase 6. If any lens failed, never emit the all-clear line.
+8. **Empty.** No row, no decision and nothing handed back, and every lens ran → the all-clear line in the user's language ("Panel of N lenses found no problems"), plus the header and the "Refuted" list if any, and skip the rest of Phase 6. If any lens failed, never emit the all-clear line.
 
 ### Phase 6 — Report, questions, application
 
@@ -153,8 +170,14 @@ Decisions (step 6) are always asked.
 4. **Exactly the approved fixes.** Before each replacement, the old text must occur exactly once. Zero occurrences → don't apply; report "text no longer found" and ask. Two or more → widen the snippet until it is unique; if impossible, ask. After each replacement, confirm the old text is gone and the new text is present.
 5. **Conversation-only target** → there is no file. After the answers, show the revised version with exactly the approved items.
 6. **Plan mode** → edit only the plan file (the scratchpad backup is allowed). Close as in rule 7, then call `ExitPlanMode` again.
-7. **Close.** List the touched files and how to revert each: `git checkout -- <file>` when it was tracked and clean, otherwise its backup path. Follow-ups go through `AskUserQuestion`. When another skill invoked this one, skip the follow-ups ("implement now?", "record as an ADR?"): the calling skill owns what happens next. End instead with a short hand-back it can act on: fixes applied, rows left unapplied, decisions and the option chosen for each, failed lenses, and the revert list.
-8. **Second round.** If an applied fix from a critical/high row, a decision, or a conflict changed behavior or a rule (not just wording), offer a narrower round: the changed passages in `content`, the file in `paths`, and each lens question starting with "Only in the passages under 'Content under review' above; read the file only for context". Never run it automatically.
+7. **Close.** List the touched files and how to revert each: `git checkout -- <file>` when it was tracked and clean, otherwise its backup path. Follow-ups go through `AskUserQuestion`. When another skill invoked this one, skip the follow-ups ("implement now?", "record as an ADR?"): the calling skill owns what happens next. End instead with a hand-back it can act on, one entry per item, each with its number, final severity, location and problem:
+   - **Applied:** the literal before and after, and whether it changed a rule, the scope or a behavior, or only wording.
+   - **Not applied:** why (the user declined, conflict left open, text no longer found).
+   - **Decisions:** the option chosen and the text applied for it.
+   - **Repeated** and **Handed back** (Phase 5 step 4), in full.
+   - **Refuted:** one line each, with who refuted it and why.
+   - **Failed lenses**, with the error as returned, and the revert list.
+8. **Second round.** If an applied fix from a critical/high row, a decision, or a conflict changed behavior or a rule (not just wording), offer a narrower round: the changed passages in `content`, the file in `paths`, and each lens question starting with "Only in the passages under 'Content under review' above; read the file only for context". Never run it automatically. When another skill invoked this one, do not offer it: the hand-back says which applied fixes changed a rule, and the caller decides.
 
 ## Additional Resources
 
