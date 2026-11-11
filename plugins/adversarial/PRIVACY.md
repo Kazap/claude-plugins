@@ -1,6 +1,6 @@
 # Privacy policy: adversarial plugin
 
-Effective date: 2026-10-13. Publisher: Kazap Tecnologia.
+Effective date: 2026-11-08. Publisher: Kazap Tecnologia.
 
 This policy covers the `adversarial` Claude Code plugin (`/adversarial:review`). The plugin runs
 entirely inside your own Claude Code session. Kazap Tecnologia operates no server for it and
@@ -27,6 +27,9 @@ makes no network calls and sends nothing to any other service, including Kazap T
 
 - Fixes you approve, or, when you run it with `--fix`, the fixes it verified, written to the
   files under review. Fixes outside the target files always ask first.
+- The review workflow script, which Claude writes from the plugin's specification once per
+  session, saved in your Claude Code session's scratchpad directory (or another temporary
+  directory) on your machine. It holds no content from your files or conversation.
 - Before the first edit, a backup copy of every file about to be edited that is not clean in git,
   saved in your Claude Code session's scratchpad directory on your machine.
 

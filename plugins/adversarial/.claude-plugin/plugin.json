@@ -1,8 +1,8 @@
 {
   "name": "adversarial",
   "displayName": "Kazap Adversarial Review",
-  "version": "1.2.0",
-  "description": "Adversarial review panel for a design, plan, spec or code: up to 6 read-only lenses calibrated to the content run via Workflow, an independent skeptic tries to refute every critical/high finding, and fixes are applied only after confirmation, or automatically with --fix.",
+  "version": "2.0.0",
+  "description": "Adversarial review of a design, plan, spec or code: up to 6 read-only lenses calibrated to the content run via Workflow, an independent skeptic tries to refute every critical/high defect, and fixes are applied only after confirmation, or automatically with --fix.",
   "author": {
     "name": "Kazap Tecnologia",
     "url": "https://github.com/Kazap"

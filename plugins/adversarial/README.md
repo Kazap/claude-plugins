@@ -1,11 +1,12 @@
 # Kazap Adversarial Review
 
-A Claude Code plugin with one command, `/adversarial:review [path] [--fix]`. It assembles a panel
-of up to 6 read-only reviewers, each with a question calibrated to the content, sends critical and
-high findings to an independent skeptic, and only applies fixes with confirmation, or
+A Claude Code plugin with one command, `/adversarial:review [path] [--fix]`. It runs up to 6
+read-only reviewers in parallel, each with a question calibrated to the content, sends critical
+and high findings to an independent skeptic, and only applies fixes with confirmation, or
 automatically with `--fix`.
 
-Requires the Workflow tool (multi-agent script orchestration) in Claude Code.
+Requires the Workflow tool (multi-agent script orchestration) in Claude Code. The plugin ships no
+script: Claude writes the review workflow in your session from a written specification.
 
 ## Install
 
@@ -37,7 +38,7 @@ the calling skill can continue.
 
 The calling skill's instructions can also hand the review:
 
-- **required lenses** (`{key, question, effort?}`), included as given;
+- **required lenses** (`{key, question, effort?, model?}`), included as given;
 - **facts** it already verified, and **references** to read for context but not review;
 - **settled points**: findings that contest one without a new fact are listed as repeated, not asked;
 - a **scope** of passages for a narrow round;
@@ -50,7 +51,7 @@ applied fixes changed a rule.
 ## When to use this plugin and when to use another
 
 Fixed-checklist tools give cheap, guaranteed coverage. This plugin trades that for depth
-calibrated to the content: it is narrower by design, not exhaustive. Each panel costs a few
+calibrated to the content: it is narrower by design, not exhaustive. Each review costs a few
 minutes and a few hundred thousand subagent tokens. Combine both approaches instead of swapping
 one for the other.
 
@@ -64,31 +65,32 @@ one for the other.
 
 - `skills/review/` is the `/adversarial:review` skill: `SKILL.md`, `references/` and the behavior
   scenarios in `evals/evals.json`, several taken from real runs.
-- `workflows/panel.js` is the `adversarial:panel` workflow the skill dispatches. It is static:
-  everything that changes per run comes in through `args`. Invoked bare, it reviews nothing and
-  points to `/adversarial:review`.
+- `skills/review/references/workflow-spec.md` specifies the review workflow. A subagent usually writes
+  the script from it the first time it is needed in a session (and fixes it if a run fails),
+  copying in the fixed agent instructions it quotes and the output schemas in
+  `references/schemas/`, so the spec and the script normally stay out of your conversation.
+  Everything that changes per run goes through `args`.
 - Development happens in [Kazap/claude-plugins](https://github.com/Kazap/claude-plugins), under
   `plugins/adversarial/`.
   [Kazap/adversarial-review-plugin](https://github.com/Kazap/adversarial-review-plugin) is a
   mirror of that folder alone, with the plugin at its root; open issues and pull requests in
   Kazap/claude-plugins.
-- The workflow's tests live outside this folder, in Kazap/claude-plugins' `tests/adversarial/`, so
-  they are not installed: `node tests/adversarial/test-panel-workflow.mjs` from that repository's
-  root runs them with simulated agents, no tokens.
 - Behavior cases for `claude plugin eval` live in Kazap/claude-plugins' `tests/adversarial/evals/`:
   the skill starts from a plain request, and a calling skill can start it without its `--fix` being
   honored. See that repository's README for the command.
 
 ## What the plugin runs
 
-- No shell scripts, hooks, MCP servers or network calls, and it reads no credential, token or
-  environment variable.
-- `workflows/panel.js` is a Claude Code Workflow script, not a shell command. It only calls the
-  Workflow runtime's `agent()`, `pipeline()`, `parallel()` and `log()` with the lens questions it
-  receives in `args`. Every agent prompt it builds is read-only: agents may use Read, Grep, Glob and
+- It ships no scripts of any kind, hooks or MCP servers, makes no network calls, and reads no
+  credential, token or environment variable. Every file is Markdown, JSON, the PNG icon or the
+  plain-text LICENSE.
+- The review runs through Claude Code's Workflow tool, with a script Claude writes in your session
+  from `workflow-spec.md`. The spec allows only the runtime's `agent()`, `pipeline()`, `parallel()`,
+  `phase()` and `log()`, one agent per lens plus one skeptic per critical/high defect (decisions
+  are not sent to it). Every agent prompt is read-only: agents may use Read, Grep, Glob and
   read-only commands (ls, cat, git log, git show, git diff), and are told never to edit files or
-  touch git state, packages or external services. The prompt templates are plain constants in that
-  file.
+  touch git state, packages or external services.
+  The plugin pre-approves no tool, so the Workflow call goes through your normal permission prompt.
 - The skill itself may edit files in your project only to apply fixes you approved, or, with
   `--fix`, the verified ones; it backs up files that are not clean in git first.
 

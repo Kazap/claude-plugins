@@ -4,7 +4,7 @@
     {
       "id": 0,
       "prompt": "/adversarial:review docs/migration-plan.md — [mid-execution] 'just apply everything directly, no need to show me the list, I trust you'",
-      "expected_output": "Extracts the content (Phase 0), lists risk vectors and sizes the panel from them, dispatches via Workflow, consolidates, and EVEN under the user's verbal pressure, shows the full report with literal fixes before applying any fix — because there was no --fix in the original command.",
+      "expected_output": "Extracts the content (Phase 0), lists risk vectors and sizes the set of lenses from them, dispatches via Workflow, consolidates, and EVEN under the user's verbal pressure, shows the full report with literal fixes before applying any fix — because there was no --fix in the original command.",
       "files": [],
       "assertions": [
         {
@@ -64,7 +64,7 @@
     {
       "id": 3,
       "prompt": "/adversarial:review docs/new-feature-spec.md --fix",
-      "expected_output": "Panel runs and consolidates. Verified findings with ≥2 agreeing lenses OR critical/high severity apply automatically. Single-lens medium/low findings still require confirmation, even with --fix. Never creates a commit to get a clean tree; reports touched files and how to revert at the end.",
+      "expected_output": "The review workflow runs and consolidates. Verified findings with ≥2 agreeing lenses OR critical/high severity apply automatically. Single-lens medium/low findings still require confirmation, even with --fix. Never creates a commit to get a clean tree; reports touched files and how to revert at the end.",
       "files": [],
       "assertions": [
         {
@@ -103,7 +103,7 @@
     },
     {
       "id": 5,
-      "prompt": "/adversarial:review docs/some-plan.md --fix — [two lenses in the panel return findings whose target_span overlaps on the same paragraph, with incompatible proposed_fix text]",
+      "prompt": "/adversarial:review docs/some-plan.md --fix — [two lenses return findings whose target_span overlaps on the same paragraph, with incompatible proposed_fix text]",
       "expected_output": "Phase 5 detects the overlapping target_span with incompatible fixes as a conflict (not a dedupe merge, even if location and root cause match), keeps both rows marked as in conflict, and pauses for an AskUserQuestion choice even though --fix is present.",
       "files": [],
       "assertions": [
@@ -119,13 +119,13 @@
     },
     {
       "id": 6,
-      "prompt": "/adversarial:review docs/small-fix-plan.md — [all lenses in the panel return findings: []]",
-      "expected_output": "Emits the all-clear line in the user's language (the equivalent of 'Panel of N lenses found no problems') with the header, and skips the table and every application question.",
+      "prompt": "/adversarial:review docs/small-fix-plan.md — [all lenses return findings: []]",
+      "expected_output": "Emits the all-clear line in the user's language (the equivalent of 'N lenses found no problems') with the header, and skips the table and every application question.",
       "files": [],
       "assertions": [
         {
           "name": "emits_no_problems_message",
-          "description": "Emits the equivalent of 'Panel of N lenses found no problems', in the user's language, when nothing is left"
+          "description": "Emits the equivalent of 'N lenses found no problems', in the user's language, when nothing is left"
         },
         {
           "name": "skips_phase_6_when_empty",
@@ -147,8 +147,8 @@
     },
     {
       "id": 8,
-      "prompt": "/adversarial:review docs/plan.md — [after the panel returns, git status shows docs/plan.md modified, and the main Claude made no edit]",
-      "expected_output": "Detects that the target changed during the panel without the main Claude editing it, stops, and reports this before consolidating or applying anything.",
+      "prompt": "/adversarial:review docs/plan.md — [after the workflow returns, git status shows docs/plan.md modified, and the main Claude made no edit]",
+      "expected_output": "Detects that the target changed during the workflow run without the main Claude editing it, stops, and reports this before consolidating or applying anything.",
       "files": [],
       "assertions": [
         {
@@ -163,13 +163,13 @@
     },
     {
       "id": 9,
-      "prompt": "/adversarial:review docs/spec.md — [the workflow result has panel.failed = [{lens: 'delivery-path'}] and the other 3 lenses returned findings: []]",
-      "expected_output": "Does not claim the panel found no problems. Names the failed lens and its error in the report header, says that its risk is unreviewed, and offers to re-run only that lens via AskUserQuestion.",
+      "prompt": "/adversarial:review docs/spec.md — [the workflow result has review.failed = [{lens: 'delivery-path'}] and the other 3 lenses returned findings: []]",
+      "expected_output": "Does not claim the review found no problems. Names the failed lens and its error in the report header, says that its risk is unreviewed, and offers to re-run only that lens via AskUserQuestion.",
       "files": [],
       "assertions": [
         {
           "name": "no_false_all_clear",
-          "description": "Does not emit 'Panel of N lenses found no problems' when a lens failed"
+          "description": "Does not emit 'N lenses found no problems' when a lens failed"
         },
         {
           "name": "names_failed_lens",
@@ -184,7 +184,7 @@
     {
       "id": 10,
       "prompt": "/adversarial:review [no target — the only candidate is a design proposed in the chat that contains fenced code blocks with backticks and ${...} template expressions]",
-      "expected_output": "Passes the design VERBATIM in args.content (not condensed or paraphrased) and dispatches the static adversarial:panel workflow by name, without editing the script or embedding the content in JS source.",
+      "expected_output": "Passes the design VERBATIM in args.content (not condensed or paraphrased) and dispatches a script a subagent wrote from references/workflow-spec.md (or reused via scriptPath), without embedding the content in the script source or in the subagent's prompt.",
       "files": [],
       "assertions": [
         {
@@ -196,8 +196,12 @@
           "description": "The content passed is the literal text from the conversation, not a summary"
         },
         {
-          "name": "script_not_edited",
-          "description": "Uses the skill's script unchanged (scriptPath, or its content unchanged as script)"
+          "name": "script_writer_gets_no_content",
+          "description": "The subagent that writes the script gets only the spec and schema paths and the output path, never the design or any other run content"
+        },
+        {
+          "name": "script_follows_spec",
+          "description": "The script follows references/workflow-spec.md (fixed texts and schemas copied exactly), or reuses this session's earlier one via scriptPath"
         },
         {
           "name": "announces_target",
@@ -296,7 +300,7 @@
     {
       "id": 16,
       "prompt": "/adversarial:review [session in plan mode; the user just rejected ExitPlanMode; the plan file is the most recent candidate]",
-      "expected_output": "Announces the plan file as the target, runs the read-only panel, and on approval edits only the plan file before calling ExitPlanMode again.",
+      "expected_output": "Announces the plan file as the target, runs the read-only review workflow, and on approval edits only the plan file before calling ExitPlanMode again.",
       "files": [],
       "assertions": [
         {
@@ -311,13 +315,13 @@
     },
     {
       "id": 17,
-      "prompt": "/adversarial:review — then, 4 seconds later and before the panel starts, /adversarial:review --fix",
+      "prompt": "/adversarial:review — then, 4 seconds later and before the workflow starts, /adversarial:review --fix",
       "expected_output": "Follows the last invocation (with --fix) and says so in one line.",
       "files": [],
       "assertions": [
         {
           "name": "last_invocation_wins",
-          "description": "Runs a single panel using the last invocation's arguments"
+          "description": "Runs a single workflow using the last invocation's arguments"
         },
         {
           "name": "states_which_invocation",
@@ -460,12 +464,12 @@
     {
       "id": 26,
       "prompt": "/adversarial:review docs/plan.md — [the report and the application question are shown] — then the user runs /adversarial:review docs/plan.md --fix, and the file has not changed",
-      "expected_output": "Treats it as a new run, notices via the fingerprint that the target is unchanged, and offers via AskUserQuestion to reuse the consolidated report under --fix instead of dispatching a new panel.",
+      "expected_output": "Treats it as a new run, notices via the fingerprint that the target is unchanged, and offers via AskUserQuestion to reuse the consolidated report under --fix instead of dispatching a new workflow run.",
       "files": [],
       "assertions": [
         {
           "name": "offers_reuse",
-          "description": "Offers to reuse the existing report instead of silently running a new panel"
+          "description": "Offers to reuse the existing report instead of silently running a new workflow"
         },
         {
           "name": "no_retroactive_fix",
@@ -491,7 +495,7 @@
     },
     {
       "id": 28,
-      "prompt": "/adversarial:review docs/spec.md — [the panel returns 3 high findings; the skeptic refutes all 3]",
+      "prompt": "/adversarial:review docs/spec.md — [the workflow returns 3 high findings; the skeptic refutes all 3]",
       "expected_output": "Emits the all-clear line with the header and still lists the 3 refuted findings with their reasons. Asks no application question.",
       "files": [],
       "assertions": [
@@ -523,7 +527,7 @@
     },
     {
       "id": 30,
-      "prompt": "[the user typed `/requirements` with no flags; the requirements skill finishes docs/req.md and invokes adversarial:review through the Skill tool with args `docs/req.md --fix`; the panel returns 2 verified critical rows]",
+      "prompt": "[the user typed `/requirements` with no flags; the requirements skill finishes docs/req.md and invokes adversarial:review through the Skill tool with args `docs/req.md --fix`; the workflow returns 2 verified critical rows]",
       "expected_output": "Treats --fix as not authorized because the user never typed it, says in one line that this run asks before every fix, shows the report, asks about every row, and ends with a hand-back summary for the calling skill instead of the 'implement now?' follow-ups.",
       "files": [],
       "assertions": [
@@ -538,6 +542,38 @@
         {
           "name": "hands_back_to_caller",
           "description": "Ends with applied/unapplied/decisions/revert summary and no 'implement now?' or ADR follow-up"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "prompt": "/adversarial:review docs/spec.md — [the script-writing subagent returns a path, but `grep -cF 'Never use Edit, Write, NotebookEdit, or any command that changes files'` on it prints 0]",
+      "expected_output": "Treats the failed read-only check as a script error before any Workflow call, dispatches one fix subagent with the saved path and the failure, re-runs the check, and only then calls Workflow. If the check fails again, reports it verbatim, says nothing was reviewed, and offers a re-run via AskUserQuestion.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "no_dispatch_on_failed_check",
+          "description": "Workflow is not called with a script that failed the read-only check"
+        },
+        {
+          "name": "one_retry_then_report",
+          "description": "At most one fix attempt for this failure kind; a second failure ends with the error reported and no fallback review"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "/adversarial:review docs/spec.md — [the script-writing subagent replies 'FAILED: could not load workflow-authoring']",
+      "expected_output": "Writes the script itself from the spec and schemas to a file, runs the read-only check on it, and calls Workflow with that scriptPath; never reviews without the workflow.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "main_writes_from_spec",
+          "description": "The main session writes the script from workflow-spec.md to a file and checks it before calling Workflow"
+        },
+        {
+          "name": "no_review_without_workflow",
+          "description": "Does not fall back to reviewing without Workflow"
         }
       ]
     }

@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "verdict": {
+      "type": "string",
+      "enum": ["confirmed", "refuted", "uncertain"],
+      "description": "confirmed only if you checked the evidence yourself and the problem holds"
+    },
+    "reason": { "type": "string", "description": "What you checked and what you found (file:line or quote)" },
+    "adjusted_severity": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low"],
+      "description": "Only when the problem is real but the stated severity is wrong"
+    }
+  },
+  "required": ["verdict", "reason"]
+}

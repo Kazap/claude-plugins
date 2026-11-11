@@ -5,7 +5,7 @@ Everything below is written in the user's language. The labels here are examples
 ## 1. Header (one line)
 
 ```
-Panel: 4 lenses (1 failed: delivery-path, returned nothing) · 20 raw findings, 14 rows, 2 decisions, 2 refuted · 2 min 43 s · 268k tokens
+Lenses: 4 (1 failed: delivery-path, returned nothing) · 20 raw findings, 14 rows, 2 decisions, 2 refuted · 2 min 43 s · 268k tokens
 ```
 
 Every number is counted from the workflow result or your consolidated list. Duration and tokens come from the completion notification; leave them out if it doesn't carry them.
@@ -89,6 +89,6 @@ Why not severity buckets as the main choice: in the real runs the user selected 
 
 ## 6. Special outcomes
 
-- **All clear:** header line, then `Panel of 4 lenses found no problems.`, then the "Refuted" list if any.
+- **All clear:** header line, then `4 lenses found no problems.`, then the "Refuted" list if any.
 - **A lens failed:** header line, then `delivery-path did not run (returned nothing: skipped or API error), so that risk is unreviewed.`, then whatever the other lenses produced (table, decisions, refuted), then the re-run question. Never the all-clear line.
 - **Run stopped by the integrity check:** header line, what changed (file and hash), that nothing was consolidated or applied, and the re-run question.

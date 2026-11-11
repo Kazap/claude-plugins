@@ -13,7 +13,7 @@ A [Claude Code](https://code.claude.com) plugin marketplace published by Kazap T
 
 | Plugin | Commands | What it does |
 |---|---|---|
-| [`adversarial`](plugins/adversarial) | `/adversarial:review [path] [--fix]` | Adversarial review panel for a design, plan, spec or code. Read-only lenses calibrated to the content, an independent skeptic for every critical/high finding, and fixes applied only after confirmation or with `--fix`. |
+| [`adversarial`](plugins/adversarial) | `/adversarial:review [path] [--fix]` | Adversarial review of a design, plan, spec or code. Up to 6 read-only lenses calibrated to the content, an independent skeptic for every critical/high defect, and fixes applied only after confirmation or with `--fix`. |
 
 ## Development
 
@@ -23,8 +23,14 @@ installed. Before publishing a change:
 
 ```
 claude plugin validate .
-node tests/adversarial/test-panel-workflow.mjs
+node tests/adversarial/test-workflow-spec.mjs
 ```
+
+`adversarial` ships no script: Claude writes its review workflow in each session from
+`plugins/adversarial/skills/review/references/workflow-spec.md`. The test runs a script written
+from that spec, `tests/adversarial/reference-workflow.js` by default, with simulated agents and
+checks it against the spec and the schemas. After changing the spec, have Claude write a new
+script from it and pass its path to the test.
 
 Behavior evals run real models, so they cost tokens (about US$ 0.10 per run for `adversarial`).
 Run them from the repository root, so the cases can load the plugin from `plugins/`:

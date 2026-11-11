@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "unread": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Target paths you could not read in full (denied, missing, too large). Empty when you read every target."
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["defect", "decision"],
+            "description": "defect = something is wrong and the fix is clear. decision = a legitimate product/design choice with no single right answer; the user must pick."
+          },
+          "problem": { "type": "string" },
+          "severity": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+          "location": { "type": "string", "description": "Section/heading of the content, or file:line" },
+          "evidence": {
+            "type": "string",
+            "description": "Exact quote from the content, or file:line of a repo file you actually read, that grounds the finding"
+          },
+          "proposed_fix": {
+            "type": "string",
+            "description": "Files: a unified diff. Prose: the literal current text, then the literal replacement, each labeled. Never a vague description. For a decision: the options and their consequence."
+          },
+          "target_span": {
+            "type": "string",
+            "description": "The exact snippet the fix would replace, copied verbatim from the content (used to detect conflicts between lenses)"
+          }
+        },
+        "required": ["kind", "problem", "severity", "location", "evidence", "proposed_fix", "target_span"]
+      }
+    }
+  },
+  "required": ["unread", "findings"]
+}

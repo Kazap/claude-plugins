@@ -1,6 +1,6 @@
 # Lens → effort patterns
 
-Catalog of worked examples (few-shot calibration). When assembling the panel (Phase 2/3), match
+Catalog of worked examples (few-shot calibration). When choosing the lenses (Phase 2/3), match
 the new lens against the closest example below. The examples anchor judgment; they are not a
 rigid table by content type.
 
