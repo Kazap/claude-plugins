@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "adversarial",
-      "description": "Adversarial review of a design, plan, spec or code: read-only lenses calibrated to the content, an independent skeptic for critical/high defects, and fixes applied only after confirmation or with --fix.",
+      "description": "Adversarial review of a design, plan, spec or code: read-only lenses calibrated to the content, an independent skeptic for critical/high defects, and fixes applied only after confirmation or with --fix. Optional cross-model review adds OpenAI (Codex CLI) and Google (Antigravity CLI) models you authorize, sending content to them.",
       "author": {
         "name": "Kazap Tecnologia"
       },

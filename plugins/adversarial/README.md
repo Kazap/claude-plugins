@@ -1,9 +1,15 @@
 # Kazap Adversarial Review
 
-A Claude Code plugin with one command, `/adversarial:review [path] [--fix]`. It runs up to 6
-read-only reviewers in parallel, each with a question calibrated to the content, sends critical
-and high findings to an independent skeptic, and only applies fixes with confirmation, or
-automatically with `--fix`.
+A Claude Code plugin with two commands:
+
+- `/adversarial:review [path] [--fix]` runs up to 6 read-only reviewers in parallel, each with a
+  question calibrated to the content, sends critical and high findings to an independent skeptic,
+  and only applies fixes with confirmation, or automatically with `--fix`. Nothing leaves your
+  Claude Code session.
+- `/adversarial:cross-model-review [path] [--fix]` runs the same panel plus one review by each
+  model from another family you subscribe to and authorize: OpenAI through the Codex CLI and
+  Google through the Antigravity CLI. **It sends content to those providers.** It only runs when
+  you ask for it by name.
 
 Requires the Workflow tool (multi-agent script orchestration) in Claude Code. The plugin ships no
 script: Claude writes the review workflow in your session from a written specification.
@@ -25,6 +31,29 @@ script: Claude writes the review workflow in your session from a written specifi
 
 Reports and questions come in the language of the conversation. Quotes from the target stay
 verbatim.
+
+### Cross-model review
+
+```
+/adversarial:cross-model-review docs/plan.md   # panel + authorized external models
+/adversarial:cross-model-review setup          # (re)do the setup for this project
+/adversarial:cross-model-review revoke openai  # stop sending this project to OpenAI
+```
+
+The first run in a project runs a setup: it checks which supported CLIs are installed and logged
+in, lists their models (never Claude models), and asks you to authorize each provider after
+showing what it would receive. Authorization is per person (the machine user) and per project
+(the repository of the target, identified by its `origin`), kept in
+`~/.claude/adversarial/cross-model.json`, never in the project. Each run says in one line where the
+content goes. All permission prompts are answered before anything is sent, external tools run
+read-only, a provider that fails or takes more than 10 minutes is reported as failed, and the
+report says which reviewer, Claude lens or external model, found each row.
+
+Each external tool keeps its natural behavior: it may read any file it can reach on your machine
+and load its own global instructions, memories, history and plugins, and all of that may reach its
+provider. The skill does not filter it. Requires the Codex CLI and/or the Antigravity CLI, logged
+in, besides the Workflow tool. A plain request for an adversarial review always runs
+`/adversarial:review`, never this one.
 
 ### From another skill
 
@@ -63,6 +92,8 @@ one for the other.
 
 ## Layout
 
+- `skills/cross-model-review/` is the `/adversarial:cross-model-review` skill. It follows the
+  review's procedure and adds the setup, the external providers and their prompt, in `references/`.
 - `skills/review/` is the `/adversarial:review` skill: `SKILL.md`, `references/` and the behavior
   scenarios in `evals/evals.json`, several taken from real runs.
 - `skills/review/references/workflow-spec.md` specifies the review workflow. A subagent usually writes
@@ -81,9 +112,15 @@ one for the other.
 
 ## What the plugin runs
 
-- It ships no scripts of any kind, hooks or MCP servers, makes no network calls, and reads no
-  credential, token or environment variable. Every file is Markdown, JSON, the PNG icon or the
-  plain-text LICENSE.
+- It ships no scripts of any kind, hooks or MCP servers. Every file is Markdown, JSON, the PNG icon
+  or the plain-text LICENSE.
+- `/adversarial:review` makes no network calls and reads no credential, token or environment
+  variable.
+- `/adversarial:cross-model-review` runs, through your normal permission prompts, `codex` and/or
+  `agy`: to check that they are installed and logged in (`codex login status`, `agy models`), to
+  list models, and to review read-only (`codex exec -s read-only`, `agy -p --mode plan --sandbox`
+  with writes and commands denied). Those tools send the content to OpenAI and Google under your
+  own accounts. It writes `~/.claude/adversarial/cross-model.json` with your choices.
 - The review runs through Claude Code's Workflow tool, with a script Claude writes in your session
   from `workflow-spec.md`. The spec allows only the runtime's `agent()`, `pipeline()`, `parallel()`,
   `phase()` and `log()`, one agent per lens plus one skeptic per critical/high defect (decisions
@@ -96,8 +133,9 @@ one for the other.
 
 ## Privacy
 
-The plugin runs entirely in your Claude Code session; Kazap Tecnologia receives no data. See
-[PRIVACY.md](PRIVACY.md).
+Kazap Tecnologia receives no data from either command. `/adversarial:review` runs entirely in your
+Claude Code session; `/adversarial:cross-model-review` also sends content to the providers you
+authorize. See [PRIVACY.md](PRIVACY.md).
 
 ## License
 

@@ -1,45 +1,89 @@
 # Privacy policy: adversarial plugin
 
-Effective date: 2026-11-08. Publisher: Kazap Tecnologia.
+Effective date: 2026-11-12. Publisher: Kazap Tecnologia.
 
-This policy covers the `adversarial` Claude Code plugin (`/adversarial:review`). The plugin runs
-entirely inside your own Claude Code session. Kazap Tecnologia operates no server for it and
-receives, collects or retains none of your data.
+This policy covers the `adversarial` Claude Code plugin and its two commands,
+`/adversarial:review` and `/adversarial:cross-model-review`. Kazap Tecnologia operates no server
+for either and receives, collects or retains none of your data.
 
-## What the plugin reads
+**What changed in 3.0.0.** Until version 2.0.0 this policy said, for the whole plugin, that it
+makes no network calls and sends nothing to any other service. That still holds for
+`/adversarial:review`. Version 3.0.0 adds `/adversarial:cross-model-review`, which sends content
+to OpenAI and Google, through tools you install and log into, only after you set it up and
+authorize each provider for each project.
+
+## /adversarial:review
+
+### What it reads
 
 - The target you choose: the files or directory you name, a diff, or the text of a design or plan
   from the current conversation.
 - Context the review needs: files in your repository that the target relies on, opened read-only,
   and git metadata such as `git status`, `git ls-files`, `git log`, `git show` and `git diff`.
 
-The plugin does not look for personal data. It reads no credentials, tokens, environment
-variables or files outside what the review needs, and it uses no connectors or MCP servers.
+It does not look for personal data. It reads no credentials, tokens, environment variables or
+files outside what the review needs, and it uses no connectors or MCP servers.
 
-## Where that content goes
+### Where that content goes
 
 The review is done by Claude subagents dispatched through Claude Code's Workflow tool, in your
 session and under your own Claude account. The content they read is processed by Anthropic as
-part of that session, under the terms that already apply to your use of Claude Code. The plugin
+part of that session, under the terms that already apply to your use of Claude Code. This command
 makes no network calls and sends nothing to any other service, including Kazap Tecnologia.
 
-## What the plugin writes
+## /adversarial:cross-model-review
 
-- Fixes you approve, or, when you run it with `--fix`, the fixes it verified, written to the
-  files under review. Fixes outside the target files always ask first.
+It runs only when you ask for it by name. A plain request for an adversarial review runs
+`/adversarial:review`, and no other skill can start this one.
+
+### What it sends, and to whom
+
+For each provider you authorized for the project of the target (OpenAI, through the Codex CLI;
+Google, through the Antigravity CLI), every run sends, under your own account with that provider:
+
+- the target, including conversation text or a diff;
+- the verified facts given to the reviewers, whole, even when they quote files of another project;
+- any file the external tool manages to read on your machine, inside or outside the project;
+- whatever the external tool loads on its own: its global instructions, memories, history and
+  plugins.
+
+The plugin does not filter any of this. Secrets or personal data in any of it are sent too. What
+each provider does with it follows your agreement with that provider. The same content also goes
+to Anthropic, as with `/adversarial:review`.
+
+### What it reads and runs on your machine
+
+- Whether `codex` and `agy` are installed and logged in (`codex login status`, `agy models`), and
+  their list of models. It does not read the content of their credential files.
+- The external tools run read-only (`codex exec -s read-only`; `agy` in plan mode, in its sandbox,
+  with file writes and commands denied), through your normal Claude Code permission prompts.
+
+### What it stores
+
+`~/.claude/adversarial/cross-model.json`, on your machine and outside every project: for each
+project, which providers you authorized or refused, the chosen model and the date. It is never
+written inside a project, and a copy found inside a project authorizes nothing. Delete the file,
+or run `/adversarial:cross-model-review revoke <openai|google>`, to stop sending to a provider.
+
+## What both commands write
+
+- Fixes you approve, or, when you run with `--fix`, the fixes it verified, written to the files
+  under review. Fixes outside the target files always ask first.
 - The review workflow script, which Claude writes from the plugin's specification once per
-  session, saved in your Claude Code session's scratchpad directory (or another temporary
-  directory) on your machine. It holds no content from your files or conversation.
+  session, and, for the cross-model review, the prompt and answer files of the external tools,
+  in your Claude Code session's scratchpad directory on your machine. The cross-model files are
+  deleted at the end of the run.
 - Before the first edit, a backup copy of every file about to be edited that is not clean in git,
   saved in your Claude Code session's scratchpad directory on your machine.
 
-It keeps no logs, analytics or telemetry, and stores nothing else.
+Neither command keeps logs, analytics or telemetry.
 
 ## Retention
 
 Kazap Tecnologia retains nothing, because it receives nothing. Backup copies stay in your local
-scratchpad directory, under your control. Session data held by Anthropic follows Anthropic's own
-policies.
+scratchpad directory and the cross-model configuration stays in your home directory, under your
+control. Data held by Anthropic, OpenAI or Google follows their own policies and your agreements
+with them.
 
 ## Children
 

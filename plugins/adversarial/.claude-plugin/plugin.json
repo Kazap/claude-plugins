@@ -1,8 +1,8 @@
 {
   "name": "adversarial",
   "displayName": "Kazap Adversarial Review",
-  "version": "2.0.0",
-  "description": "Adversarial review of a design, plan, spec or code: up to 6 read-only lenses calibrated to the content run via Workflow, an independent skeptic tries to refute every critical/high defect, and fixes are applied only after confirmation, or automatically with --fix.",
+  "version": "3.0.0",
+  "description": "Adversarial review of a design, plan, spec or code: up to 6 read-only lenses calibrated to the content run via Workflow, an independent skeptic tries to refute every critical/high defect, and fixes are applied only after confirmation, or automatically with --fix. A second command, cross-model-review, adds models from other families (OpenAI via Codex CLI, Google via Antigravity CLI) that you authorize, and sends content to those providers.",
   "author": {
     "name": "Kazap Tecnologia",
     "url": "https://github.com/Kazap"
@@ -17,7 +17,10 @@
     "spec-review",
     "plan-review",
     "workflow",
-    "multi-agent"
+    "multi-agent",
+    "cross-model",
+    "codex",
+    "antigravity"
   ],
   "icon": "./.claude-plugin/icon.png",
   "privacyPolicyUrl": "https://github.com/Kazap/claude-plugins/blob/main/plugins/adversarial/PRIVACY.md",

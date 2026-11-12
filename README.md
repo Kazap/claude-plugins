@@ -13,7 +13,7 @@ A [Claude Code](https://code.claude.com) plugin marketplace published by Kazap T
 
 | Plugin | Commands | What it does |
 |---|---|---|
-| [`adversarial`](plugins/adversarial) | `/adversarial:review [path] [--fix]` | Adversarial review of a design, plan, spec or code. Up to 6 read-only lenses calibrated to the content, an independent skeptic for every critical/high defect, and fixes applied only after confirmation or with `--fix`. |
+| [`adversarial`](plugins/adversarial) | `/adversarial:review [path] [--fix]`<br>`/adversarial:cross-model-review [path] [--fix]` | Adversarial review of a design, plan, spec or code. Up to 6 read-only lenses calibrated to the content, an independent skeptic for every critical/high defect, and fixes applied only after confirmation or with `--fix`. The cross-model command adds OpenAI (Codex CLI) and Google (Antigravity CLI) models you authorize, and sends content to them. |
 
 ## Development
 
