@@ -115,16 +115,17 @@ one line per provider:
 ```bash
 #!/usr/bin/env bash
 cd "<root>" || exit 1
-( <OpenAI command, with 2> "<err>"> ; echo "openai exit=$?" ) &
-( <Google command> ; echo "google exit=$?" ) &
+( <OpenAI command, with 2> "<err>"> ; echo "openai exit=$?" | tee -a "<run dir>/exits.txt" ) &
+( <Google command> ; echo "google exit=$?" | tee -a "<run dir>/exits.txt" ) &
 (
-  <opencode command for the first maker> ; echo "opencode:<maker> exit=$?"
-  <opencode command for the next maker> ; echo "opencode:<maker> exit=$?"
+  <opencode command for the first maker> ; echo "opencode:<maker> exit=$?" | tee -a "<run dir>/exits.txt"
+  <opencode command for the next maker> ; echo "opencode:<maker> exit=$?" | tee -a "<run dir>/exits.txt"
 ) &
 wait
 ```
 
-Only authorized providers get a line, each with its own `<out>` and `<err>`. The opencode makers run
+Only authorized providers get a line, each with its own `<out>` and `<err>`, and each exit code is
+also appended to `<run dir>/exits.txt`, which the collection subagent reads. The opencode makers run
 **one after another** inside a single background group, never at the same time: parallel opencode
 runs share opencode's local database and fail with "database is locked". Each still has its own
 10-minute limit, and the group as a whole runs alongside Codex and Antigravity. Values that come from
@@ -151,7 +152,7 @@ first `{` to the last `}` of the answer (code fences around it are fine).
 Then treat every provider's result like a review lens (`../review/references/workflow-spec.md`,
 Run, Stage 1), first match wins:
 
-1. Non-zero exit, killed by the alarm (exit 142), or `<out>` missing or empty → failed. The error is
+1. Non-zero exit in `exits.txt`, killed by the alarm (exit 142), or `<out>` missing or empty → failed. The error is
    "did not answer within 10 minutes" for the alarm, otherwise the last line of stderr (for
    opencode, the error event's message), verbatim.
 2. Not a JSON object (for Google: the printed object has no object in `structured_output`; for

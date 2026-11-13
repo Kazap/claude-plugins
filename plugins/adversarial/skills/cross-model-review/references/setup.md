@@ -64,9 +64,11 @@ needs no login), or whose check the person denied (D-49) is not offered (D-28). 
 providers from what is left: `openai` from Codex, `google` from Antigravity, and the opencode makers
 (`providers.md`, "opencode makers"), one model per provider across CLIs (D-20, D-56).
 
-**2. Show the notice once**, before any question, since answering is authorizing: as its own message,
-with the full text below as a quote block, in the user's language. Never shorten it into a status or
-summary line.
+**2. Show the notice once**, before any question, since answering is authorizing. It is the consent
+text: write it as its own message, right before the first question, with the full text below as a
+quote block, translated into the user's language and otherwise word for word. Never paraphrase it,
+shorten it, merge it with other text or turn it into a progress, status or summary line, also when
+`setup` runs again for a project that already has an entry.
 
 > Choosing a model for a provider authorizes it for <project id>. On every cross-model review of
 > this project, each chosen provider receives: the target (including conversation text or a diff),
@@ -127,7 +129,8 @@ option, "For models whose maker is not identified, the terms are those of each m
 follow-up question for a maker with several models follows the same rules.
 
 **4. Save the file** (the preparation subagent does it with the rest of the run; the main session,
-only when the run stops before that, or for `setup` alone). Every chosen provider is `authorized: true` with its model and the date; every
+only when the run stops before that, or for `setup` alone: then open the file with the `Read` tool,
+never `cat`, and rewrite it whole with `Write`). Every chosen provider is `authorized: true` with its model and the date; every
 provider offered and not chosen ("Do not use", or a maker left unchecked) is `authorized: false`.
 If no provider is authorized, the run stops without reviewing and suggests `/adversarial:review`
 (D-28). The setup never runs again by itself for a project that has an entry; the person asks for
