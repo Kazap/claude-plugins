@@ -9,8 +9,8 @@ for either and receives, collects or retains none of your data.
 **What changed in 3.0.0.** Until version 2.0.0 this policy said, for the whole plugin, that it
 makes no network calls and sends nothing to any other service. That still holds for
 `/adversarial:review`. Version 3.0.0 adds `/adversarial:cross-model-review`, which sends content
-to OpenAI and Google, through tools you install and log into, only after you set it up and
-authorize each provider for each project.
+to OpenAI, Google and other model makers reached through opencode, through tools you
+install and log into, only after you set it up and authorize each provider for each project.
 
 ## /adversarial:review
 
@@ -39,7 +39,9 @@ It runs only when you ask for it by name. A plain request for an adversarial rev
 ### What it sends, and to whom
 
 For each provider you authorized for the project of the target (OpenAI, through the Codex CLI;
-Google, through the Antigravity CLI), every run sends, under your own account with that provider:
+Google, through the Antigravity CLI; other makers such as DeepSeek, Zhipu, MiniMax or NVIDIA,
+through opencode), every run sends, under your own account with that provider or through
+opencode's own service:
 
 - the target, including conversation text or a diff;
 - the verified facts given to the reviewers, whole, even when they quote files of another project;
@@ -47,23 +49,30 @@ Google, through the Antigravity CLI), every run sends, under your own account wi
 - whatever the external tool loads on its own: its global instructions, memories, history and
   plugins.
 
+opencode's free models (names ending in `-free`, under the `opencode/` route) go through
+opencode's own service (OpenCode Zen) and then to the model's maker, under the free tier's terms,
+which are usually looser about how prompts and code are used, retained or used for training. The
+setup notice says so before you authorize one.
+
 The plugin does not filter any of this. Secrets or personal data in any of it are sent too. What
 each provider does with it follows your agreement with that provider. The same content also goes
 to Anthropic, as with `/adversarial:review`.
 
 ### What it reads and runs on your machine
 
-- Whether `codex` and `agy` are installed and logged in (`codex login status`, `agy models`), and
-  their list of models. It does not read the content of their credential files.
+- Whether `codex`, `agy` and `opencode` are installed and logged in (`codex login status`,
+  `agy models`, `opencode models`), and their list of models. It does not read the content of their
+  credential files.
 - The external tools run read-only (`codex exec -s read-only`; `agy` in plan mode, in its sandbox,
-  with file writes and commands denied), through your normal Claude Code permission prompts.
+  with file writes and commands denied; `opencode` with the plan agent and shell, edits and web
+  fetch denied for that run), through your normal Claude Code permission prompts.
 
 ### What it stores
 
 `~/.claude/adversarial/cross-model.json`, on your machine and outside every project: for each
 project, which providers you authorized or refused, the chosen model and the date. It is never
 written inside a project, and a copy found inside a project authorizes nothing. Delete the file,
-or run `/adversarial:cross-model-review revoke <openai|google>`, to stop sending to a provider.
+or run `/adversarial:cross-model-review revoke <provider>`, to stop sending to a provider.
 
 ## What both commands write
 
@@ -82,7 +91,8 @@ Neither command keeps logs, analytics or telemetry.
 
 Kazap Tecnologia retains nothing, because it receives nothing. Backup copies stay in your local
 scratchpad directory and the cross-model configuration stays in your home directory, under your
-control. Data held by Anthropic, OpenAI or Google follows their own policies and your agreements
+control. Data held by Anthropic, OpenAI, Google, opencode or any other model maker follows their own
+policies and your agreements
 with them.
 
 ## Children

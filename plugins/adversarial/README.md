@@ -7,9 +7,10 @@ A Claude Code plugin with two commands:
   and only applies fixes with confirmation, or automatically with `--fix`. Nothing leaves your
   Claude Code session.
 - `/adversarial:cross-model-review [path] [--fix]` runs the same panel plus one review by each
-  model from another family you subscribe to and authorize: OpenAI through the Codex CLI and
-  Google through the Antigravity CLI. **It sends content to those providers.** It only runs when
-  you ask for it by name.
+  model from another family you have access to and authorize: OpenAI through the Codex CLI,
+  Google through the Antigravity CLI, and other makers (DeepSeek, Zhipu, MiniMax, NVIDIA and more)
+  through opencode, one model per maker. **It sends content to those providers.** It only runs
+  when you ask for it by name.
 
 Requires the Workflow tool (multi-agent script orchestration) in Claude Code. The plugin ships no
 script: Claude writes the review workflow in your session from a written specification.
@@ -51,8 +52,10 @@ report says which reviewer, Claude lens or external model, found each row.
 
 Each external tool keeps its natural behavior: it may read any file it can reach on your machine
 and load its own global instructions, memories, history and plugins, and all of that may reach its
-provider. The skill does not filter it. Requires the Codex CLI and/or the Antigravity CLI, logged
-in, besides the Workflow tool. A plain request for an adversarial review always runs
+provider. The skill does not filter it. opencode's free models (`opencode/*-free`) go through
+opencode's own service and its free-tier terms, which the setup notice states. Requires at least
+one of the Codex CLI, the Antigravity CLI or opencode, logged in (opencode's free tier needs no
+login), besides the Workflow tool. A plain request for an adversarial review always runs
 `/adversarial:review`, never this one.
 
 ### From another skill
@@ -116,11 +119,13 @@ one for the other.
   or the plain-text LICENSE.
 - `/adversarial:review` makes no network calls and reads no credential, token or environment
   variable.
-- `/adversarial:cross-model-review` runs, through your normal permission prompts, `codex` and/or
-  `agy`: to check that they are installed and logged in (`codex login status`, `agy models`), to
-  list models, and to review read-only (`codex exec -s read-only`, `agy -p --mode plan --sandbox`
-  with writes and commands denied). Those tools send the content to OpenAI and Google under your
-  own accounts. It writes `~/.claude/adversarial/cross-model.json` with your choices.
+- `/adversarial:cross-model-review` runs, through your normal permission prompts, `codex`, `agy`
+  and/or `opencode`: to check that they are installed and logged in (`codex login status`,
+  `agy models`, `opencode models`), to list models, and to review read-only
+  (`codex exec -s read-only`; `agy -p --mode plan --sandbox` with writes and commands denied;
+  `opencode run --agent plan` with shell, edits and web fetch denied for that run only). Those tools
+  send the content to the providers you authorized, under your own accounts or opencode's free
+  tier. It writes `~/.claude/adversarial/cross-model.json` with your choices.
 - The review runs through Claude Code's Workflow tool, with a script Claude writes in your session
   from `workflow-spec.md`. The spec allows only the runtime's `agent()`, `pipeline()`, `parallel()`,
   `phase()` and `log()`, one agent per lens plus one skeptic per critical/high defect (decisions

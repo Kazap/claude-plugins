@@ -1,9 +1,9 @@
 ---
 name: cross-model-review
-description: Use ONLY when the user explicitly asks, by name, for a cross-model review ("/adversarial:cross-model-review", "cross-model review", "revisão cross-model", "revisão entre modelos") — the adversarial review panel plus models from other families (OpenAI through the Codex CLI, Google through the Antigravity CLI) the user subscribes to. It sends content to those providers. Never for a generic request for an adversarial review or a review panel (that is adversarial:review), never started by another skill, and never on Claude's own initiative.
-argument-hint: "[path] [--fix] | setup | revoke <openai|google>"
+description: Use ONLY when the user explicitly asks, by name, for a cross-model review ("/adversarial:cross-model-review", "cross-model review", "revisão cross-model", "revisão entre modelos") — the adversarial review panel plus models from other families the user has access to (OpenAI through the Codex CLI, Google through the Antigravity CLI, and other makers such as DeepSeek, Zhipu or MiniMax through opencode). It sends content to those providers. Never for a generic request for an adversarial review or a review panel (that is adversarial:review), never started by another skill, and never on Claude's own initiative.
+argument-hint: "[path] [--fix] | setup | revoke <provider>"
 license: MIT
-compatibility: Claude Code with the Workflow tool, plus the Codex CLI and/or the Antigravity CLI logged in.
+compatibility: Claude Code with the Workflow tool, plus at least one of the Codex CLI, the Antigravity CLI or opencode, logged in (opencode's free tier needs no login).
 metadata:
   author: Kazap Tecnologia
 ---
@@ -13,8 +13,9 @@ metadata:
 ## Overview
 
 The `/adversarial:review` panel (Claude lenses and a Claude skeptic) plus one general review of the
-whole target by each external model the person authorized for the project: at most one OpenAI
-model through Codex and one Google model through Antigravity, outside the 6-lens limit. Everything
+whole target by each external model the person authorized for the project: one model per
+provider (the maker of the model), OpenAI through Codex, Google through Antigravity and other makers
+through opencode, outside the 6-lens limit. Everything
 lands in one consolidated report with the review's own questions and application rules, and each
 row says who found it.
 
@@ -62,7 +63,8 @@ only the differences below. There is no caller contract: no skill calls this one
    left → stop without reviewing, suggest `/adversarial:review`, and say why: no provider
    authorized, or none authorized in all the target's projects (D-28).
 4. Announce in one line which providers will receive the content: "This review sends the target to
-   OpenAI (Codex, <model>) and Google (Antigravity, <model>)." (D-11). No new question.
+   OpenAI (Codex, <model>), Google (Antigravity, <model>) and DeepSeek (opencode, <model>)." (D-11).
+   No new question.
 
 ### Step 2 — Lenses
 
@@ -104,8 +106,8 @@ Then dispatch the skeptic for every external `defect` whose severity is critical
 
 ### Step 5 — Consolidate
 
-The review's Phase 5, with each provider treated as one more lens whose key is `openai` or
-`google`:
+The review's Phase 5, with each provider treated as one more lens whose key is its provider key
+(`openai`, `google`, `opencode:<maker>`):
 
 - **Integrity** first, as in the review: a target whose hash changed ends the run (D-40), whoever
   changed it.
@@ -128,7 +130,7 @@ The review's Phase 6, with these changes to `../review/references/report-format.
   models". When every provider failed, say the count was not measured in this run instead of 0;
   when one failed, say the count comes only from the one that answered (RF-15).
 - Failed providers are listed like failed lenses, with their error.
-- The table's "Lenses" column becomes "Found by" (Claude lens keys and `openai`/`google`).
+- The table's "Lenses" column becomes "Found by" (Claude lens keys and provider keys).
 
 Application, backups and closing follow the review exactly. No second round is offered
 automatically; offer it as the review does (rule 8).
@@ -141,6 +143,6 @@ configuration file.
 ## Additional resources
 
 - `references/setup.md` — configuration file, project identity, setup, notice, revocation
-- `references/providers.md` — Codex and Antigravity commands, read-only flags, output reading
+- `references/providers.md` — Codex, Antigravity and opencode commands, makers, read-only flags, output reading
 - `references/external-prompt.md` — the external reviewer prompt and the skeptic for its findings
 - `../review/SKILL.md` and its references — every rule this skill inherits

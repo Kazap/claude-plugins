@@ -13,25 +13,27 @@ A [Claude Code](https://code.claude.com) plugin marketplace published by Kazap T
 
 | Plugin | Commands | What it does |
 |---|---|---|
-| [`adversarial`](plugins/adversarial) | `/adversarial:review [path] [--fix]`<br>`/adversarial:cross-model-review [path] [--fix]` | Adversarial review of a design, plan, spec or code. Up to 6 read-only lenses calibrated to the content, an independent skeptic for every critical/high defect, and fixes applied only after confirmation or with `--fix`. The cross-model command adds OpenAI (Codex CLI) and Google (Antigravity CLI) models you authorize, and sends content to them. |
+| [`adversarial`](plugins/adversarial) | `/adversarial:review [path] [--fix]`<br>`/adversarial:cross-model-review [path] [--fix]` | Adversarial review of a design, plan, spec or code. Up to 6 read-only lenses calibrated to the content, an independent skeptic for every critical/high defect, and fixes applied only after confirmation or with `--fix`. The cross-model command adds models you authorize from OpenAI (Codex CLI), Google (Antigravity CLI) and other makers (opencode), and sends content to them. |
 
 ### adversarial
 
 - `/adversarial:review` runs a panel of read-only Claude lenses through Claude Code's Workflow
   tool. Nothing leaves your Claude Code session.
 - `/adversarial:cross-model-review` runs the same panel plus one general review by each external
-  model you authorize, at most one OpenAI model through the Codex CLI and one Google model through
-  the Antigravity CLI, and merges everything into one report that says who found each row. **It
+  model you authorize, one model per maker: OpenAI through the Codex CLI, Google through the
+  Antigravity CLI, and other makers (DeepSeek, Zhipu, MiniMax, NVIDIA and more) through opencode,
+  including its free tier, and merges everything into one report that says who found each row. **It
   sends the target, the verified facts and whatever each tool reads or loads on its own (any file
   it reaches, its global instructions, memories, history and plugins) to those providers, under
   your own accounts.** It only runs when you ask for it by name; a plain request for an
   adversarial review runs `/adversarial:review`.
-  - Requires the Codex CLI and/or the Antigravity CLI installed and logged in, besides the
+  - Requires at least one of the Codex CLI, the Antigravity CLI or opencode, installed and logged
+    in (opencode's free tier needs no login), besides the
     Workflow tool.
   - The first run in a project runs a setup: it detects the tools, lists their models (never
     Claude models) and asks you to authorize each provider for that project.
     `/adversarial:cross-model-review setup` redoes it, and
-    `/adversarial:cross-model-review revoke <openai|google>` stops sending to a provider. Choices
+    `/adversarial:cross-model-review revoke <provider>` stops sending to a provider. Choices
     are kept per machine user in `~/.claude/adversarial/cross-model.json`, never in the project.
   - External tools run read-only, after every permission prompt of the run is answered, and a
     provider that fails or takes more than 10 minutes is reported as failed.
@@ -66,11 +68,12 @@ claude plugin eval . --eval-dir tests/adversarial/evals --ablation none --scaffo
 `cross-model-review` follows the review's spec and procedure, so the workflow test above covers
 its Claude panel. Its own evals (`cross-model-trigger-by-name`, and the `not-cross-model` grader of
 `natural-language-trigger`) check only when it starts; they keep Bash and Workflow out of reach, so
-nothing is sent to OpenAI or Google. An end-to-end check calls the real CLIs and sends content to
+nothing is sent to any external provider. An end-to-end check calls the real CLIs and sends content to
 those providers: run it by hand on a throwaway repository with fictitious content, never on real
-code. The Codex and Antigravity flags in
+code. The Codex, Antigravity and opencode flags in
 `plugins/adversarial/skills/cross-model-review/references/providers.md` were checked against
-`codex-cli` 0.167.1 and the Antigravity CLI on 2026-11-12; recheck them when either tool updates.
+`codex-cli` 0.167.1, the Antigravity CLI and opencode 1.19.5 on 2026-11-12; recheck them when a
+tool updates.
 
 The Claude plugin directory lists each plugin from a mirror repository that holds only that
 plugin's folder, at its root. A plugin in a subfolder has every version held for a reviewer when

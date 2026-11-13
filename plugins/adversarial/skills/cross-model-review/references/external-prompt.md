@@ -30,11 +30,18 @@ Write problem, location and any explanation in the review language above. eviden
 Answer only with the JSON object the output schema describes.
 ```
 
+opencode enforces no schema, so its prompt ends with this paragraph instead of the last line
+above:
+
+```
+Answer only with one JSON object, with no text before or after it, in exactly this shape: {"unread": ["<target file you could not read in full>"], "findings": [{"kind": "defect" | "decision", "problem": "...", "severity": "critical" | "high" | "medium" | "low", "location": "...", "evidence": "...", "proposed_fix": "...", "target_span": "..."}]}. Use "unread": [] when you read every target file, and "findings": [] when you found no real problem.
+```
+
 ## Verifying an external critical or high finding
 
 The Claude skeptic verifies external critical and high defects (D-04), with the skeptic prompt of
 `../review/references/workflow-spec.md` filled as follows: `{lens.key}` is the provider key
-(`openai` or `google`), `{lens.question}` is `General adversarial review of the whole target (no
+(`openai`, `google` or `opencode:<maker>`), `{lens.question}` is `General adversarial review of the whole target (no
 lens)`, and everything else as the spec says. Dispatch one general-purpose `Agent` per finding, all
 in one message, with that prompt followed by:
 
