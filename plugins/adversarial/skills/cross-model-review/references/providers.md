@@ -32,7 +32,7 @@ CLI is not offered in this setup (D-49). It is not a failure of the run.
 The maker comes from the model name (the part after `<route>/`), by its first word: `gpt`, `o1`…
 `o9` → `openai`; `gemini` → `google`; `grok` → `xai`; `kimi` → `moonshot`; `deepseek` → `deepseek`;
 `glm` → `zhipu`; `minimax` → `minimax`; `nemotron` → `nvidia`; `mimo` → `xiaomi`; `longcat` →
-`meituan`; `qwen` → `alibaba`; `mistral`, `codestral`, `devstral` → `mistral`; `llama` → `meta`.
+`meituan`; `qwen` → `alibaba`; `mistral`, `codestral`, `devstral` → `mistral`; `llama` → `meta`; `mai` → `microsoft`.
 Any other first word is its own maker, shown to the person as "maker not identified (<word>)".
 
 **Route.** Models under the `opencode/` route are served by opencode's own service (OpenCode Zen);
@@ -119,6 +119,16 @@ Run, Stage 1), first match wins:
 2. Not a JSON object (for Google: the printed object has no object in `structured_output`; for
    opencode: no parsable object in the answer) → failed, "answer outside the expected format".
 3. `unread` is a non-empty array → failed, "could not read: " plus its items joined by ", ".
-4. `findings` is not an array, or a finding lacks one of the schema's required keys or has a
-   `kind` or `severity` outside the schema's values → failed, "answer outside the expected format".
-5. Otherwise → ok. Keep, from each finding, only the schema properties.
+4. `findings` is not an array → failed, "answer outside the expected format".
+5. Otherwise → ok. Check each finding on its own: one that is not an object, lacks one of the
+   schema's required keys, has a non-string value for one of them, or has a `kind` or `severity`
+   outside the schema's values is dropped. Keep, from each remaining finding, only the schema
+   properties. If findings were dropped and none is left → failed, "answer outside the expected
+   format"; otherwise the provider is ok, and the report says how many of its findings were
+   dropped and why (for example, "1 of 3 findings from opencode:minimax dropped: no target_span").
+
+**Login or license failure.** When a provider fails because its account cannot use the model (the
+error says the person is not logged in, not licensed, has no access, or the plan or subscription
+does not include it), the report says so and suggests
+`/adversarial:cross-model-review revoke <provider key>`, or `setup` to choose another model. The
+skill changes nothing in the configuration by itself.

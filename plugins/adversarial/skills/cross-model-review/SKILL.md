@@ -129,7 +129,9 @@ The review's Phase 6, with these changes to `../review/references/report-format.
 - Header: add the providers with their models, and "N confirmed findings found only by external
   models". When every provider failed, say the count was not measured in this run instead of 0;
   when one failed, say the count comes only from the one that answered (RF-15).
-- Failed providers are listed like failed lenses, with their error.
+- Failed providers are listed like failed lenses, with their error; a login or license failure
+  also carries the revoke or setup suggestion of `references/providers.md`. Dropped findings of a
+  provider that answered are counted in one line under the header.
 - The table's "Lenses" column becomes "Found by" (Claude lens keys and provider keys).
 
 Application, backups and closing follow the review exactly. No second round is offered
