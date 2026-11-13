@@ -53,12 +53,12 @@ session:
 
 ```bash
 for t in codex agy opencode; do command -v "$t" >/dev/null || echo "$t: not installed"; done
-command -v codex >/dev/null && { codex login status </dev/null >/dev/null 2>&1 && echo "codex: logged in: $(codex debug models </dev/null 2>/dev/null | python3 -I -c 'import sys,json; print(" ".join(m["slug"] for m in json.load(sys.stdin).get("models", []) if m.get("visibility") == "list"))' 2>/dev/null)" || echo "codex: no login"; }
-command -v agy >/dev/null && echo "agy: $(agy models </dev/null 2>/dev/null | cut -f1 | grep -v -i -e '^claude' -e '^fetching' | paste -sd' ' -)"
+command -v codex >/dev/null && if codex login status </dev/null >/dev/null 2>&1; then echo "codex: logged in"; codex debug models </dev/null 2>/dev/null | python3 -I -c 'import sys,json; [print("codex model:", m["slug"], "|", m.get("description") or "") for m in json.load(sys.stdin).get("models", []) if m.get("visibility") == "list"]' 2>/dev/null; else echo "codex: no login"; fi
+command -v agy >/dev/null && { echo "agy: installed"; agy models </dev/null 2>/dev/null | awk -F'\t' 'tolower($1) !~ /^(claude|fetching)/ && tolower($2) !~ /^claude/ {print "agy model: " $1 " | " $2}'; }
 command -v opencode >/dev/null && echo "opencode $(opencode --version </dev/null 2>/dev/null): $(opencode models </dev/null 2>/dev/null | grep -v -i '/claude' | paste -sd' ' -)"
 ```
 
-An empty model list means no login. A tool not installed, without login (explain how to log in:
+Each `codex model:` and `agy model:` line is `<id> | <about>`: Codex's own description of the model, or Antigravity's display name. An empty model list means no login. A tool not installed, without login (explain how to log in:
 `codex login`; open `agy` once and sign in; `opencode auth login`, or opencode's free tier, which
 needs no login), or whose check the person denied (D-49) is not offered (D-28). Work out the
 providers from what is left: `openai` from Codex, `google` from Antigravity, and the opencode makers
@@ -76,11 +76,19 @@ summary line.
 > personal data in any of these go too. The tools run read-only: they cannot change your files. You
 > can revoke a provider at any time with `/adversarial:cross-model-review revoke <provider key>`.
 
-**3. Ask** (up to 4 questions per call, as many calls as it takes):
+**3. Ask** (up to 4 questions per call, as many calls as it takes). Never split one tool's
+questions across calls when they fit in one: the first call holds OpenAI and Google, and the
+opencode questions go together in the next call (all of them, when they are 4 or fewer), so the
+person sees "opencode 1/3", "2/3" and "3/3" side by side. Follow-up questions for a model come in
+the call after that. When nothing else is offered, the opencode questions start in the first call.
 
 - One question for OpenAI (Codex) and one for Google (Antigravity), when offered: "Which model
   should <provider> use in this project? Choosing one authorizes it." Options: up to 3 models (for
-  Codex, "Codex default" first, then models from its list), plus **"Do not use"**. When the list has
+  Codex, "Codex default" first, then models from its list), plus **"Do not use"**. A model's
+  description says what sets it apart, never its id again: for Codex, the `<about>` of step 1,
+  translated (for example, "the most capable, for demanding work"); for Antigravity, its display
+  name with the level in parentheses read as reasoning effort (for example, "Gemini 4 Argon, medium
+  reasoning effort"). When the list has
   more models, the question text names them and says that any of them can be typed in the free-text
   answer the tool adds below the options; never call that answer "Other" or "Outros" in the
   question, since "Other" names the opencode option below. When Codex's list comes back empty, offer
