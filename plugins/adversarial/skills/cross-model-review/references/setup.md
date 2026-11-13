@@ -105,7 +105,10 @@ like opencode was left out.
   when any model's maker is not identified, one last option, **"Other opencode models (maker not
   identified)"**, with the provider key `opencode:other`. Up to 4 options per question, so 8 makers
   plus "Other" take 3 questions; questions that do not fit in the current call go in the next one.
-  Text typed in the free-text answer of these questions is a comment, never a maker.
+  Text typed in the free-text answer of these questions is a comment, never a maker. The question
+  text ends with "Leave all unchecked to use none of them." A question that comes back with nothing
+  checked, or with no answer at all, is a complete answer: none of its makers is chosen, each is
+  `authorized: false`, and it is never asked again in this setup.
 
 Before the first call, count the options against step 1: every maker found and the "Other" option,
 when it applies, must be in some question.
