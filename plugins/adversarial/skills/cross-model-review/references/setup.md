@@ -52,7 +52,7 @@ nothing is sent to a provider), and never print a tool's raw model list in the s
 
 ```bash
 for t in codex agy opencode; do command -v "$t" >/dev/null || echo "$t: not installed"; done
-command -v codex >/dev/null && { codex login status </dev/null >/dev/null 2>&1 && echo "codex: logged in" || echo "codex: no login"; }
+command -v codex >/dev/null && { codex login status </dev/null >/dev/null 2>&1 && echo "codex: logged in: $(codex debug models </dev/null 2>/dev/null | python3 -I -c 'import sys,json; print(" ".join(m["slug"] for m in json.load(sys.stdin).get("models", []) if m.get("visibility") == "list"))' 2>/dev/null)" || echo "codex: no login"; }
 command -v agy >/dev/null && echo "agy: $(agy models </dev/null 2>/dev/null | cut -f1 | grep -v -i -e '^claude' -e '^fetching' | paste -sd' ' -)"
 command -v opencode >/dev/null && echo "opencode $(opencode --version </dev/null 2>/dev/null): $(opencode models </dev/null 2>/dev/null | grep -v -i '/claude' | paste -sd' ' -)"
 ```
@@ -77,8 +77,9 @@ providers from what is left: `openai` from Codex, `google` from Antigravity, and
 
 - One question for OpenAI (Codex) and one for Google (Antigravity), when offered: "Which model
   should <provider> use in this project? Choosing one authorizes it." Options: up to 3 models (for
-  Codex, "Codex default" first), plus **"Do not use"**; the rest named in the question text for
-  "Other".
+  Codex, "Codex default" first, then models from its list), plus **"Do not use"**; the rest named in
+  the question text for "Other". When Codex's list comes back empty, offer only "Codex default" and
+  accept an id typed in "Other".
 - One multi-select question per group of up to 4 opencode makers: "Which makers should opencode use
   in this project? Each one checked is authorized." Each option is a maker; its description names
   its model when it has only one, or says "model chosen next" when it has several, plus the extra
