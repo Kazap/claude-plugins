@@ -173,7 +173,8 @@ The review's Phase 5, with each provider treated as one more lens whose key is i
   (its own row, or the finding whose fix the row keeps) is verified by the verification workflow:
   first its read-only check, `grep -cF 'Never use Edit, Write, NotebookEdit, or any command that
   changes files' <run dir>/verify-workflow.js` (at least 1), `grep -c 'READ_ONLY' <same>` (exactly
-  2) and `grep -ciE 'agentType|isolation|permission|tools|cwd' <same>` (0); then `Workflow` with
+  2) and `grep -ciE 'agentType|isolation|permission|tools|cwd' <same>` (0), in one command ending with
+  `; true`, as in the review; then `Workflow` with
   that `scriptPath` and `args` `{files: [<absolute path of each skeptic_file>]}`. A failed check, a
   refused or failed workflow, or a missing entry leaves those findings `{verdict: "uncertain",
   reason: "verifier failed or returned nothing"}`. Apply the verdicts as the review's Phase 5 step
