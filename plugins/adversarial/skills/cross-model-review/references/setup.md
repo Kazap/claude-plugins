@@ -81,6 +81,10 @@ questions across calls when they fit in one: the first call holds OpenAI and Goo
 opencode questions go together in the next call (all of them, when they are 4 or fewer), so the
 person sees "opencode 1/3", "2/3" and "3/3" side by side. Follow-up questions for a model come in
 the call after that. When nothing else is offered, the opencode questions start in the first call.
+When the questions take more than one call, say so in one short line right after the notice, before
+the first call, naming what each screen holds (for example, "First OpenAI and Google; then, on a
+second screen, the opencode makers, in 3 questions."), so a screen without opencode does not look
+like opencode was left out.
 
 - One question for OpenAI (Codex) and one for Google (Antigravity), when offered: "Which model
   should <provider> use in this project? Choosing one authorizes it." Options: up to 3 models (for
