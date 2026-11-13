@@ -114,8 +114,8 @@ The review's Phases 1 to 3, unchanged. External models are not lenses and do not
    as the full configuration file to write when a setup ran in Step 1 (otherwise null), and
    `verify_script` as the path of a `verify-workflow.js` an earlier run in this session already used
    after passing its read-only check (otherwise null).
-2. **Preparation subagent.** Dispatch one general-purpose `Agent` with this prompt, filled in, and
-   wait for it:
+2. **Preparation subagent.** Dispatch one general-purpose `Agent` with this prompt, filled in, in
+   the same message as the panel's script-writing subagent (point 3), and wait for both:
 
    ```
    Prepare the external reviews of a cross-model review. Read <skill dir>/references/providers.md, <skill dir>/references/external-prompt.md, <review dir>/references/workflow-spec.md and <review dir>/references/schemas/findings.json in one batch, then <run dir>/input.json. Write into <run dir>, exactly as those files say: prompt.txt, prompt-agy.txt when google is listed, prompt-opencode.txt when an opencode provider is listed, findings.strict.json, and run.sh with one command per provider in input.json and nothing else. Never copy text from the target or the facts into run.sh. Then, when verify_script in input.json is null, load the workflow-authoring skill, read <skill dir>/references/verify-workflow-spec.md and <review dir>/references/schemas/verdict.json, and write <run dir>/verify-workflow.js as that spec says, going through its self-check; when verify_script is a path, write nothing for it and reply with that path. When config in input.json is not null, write it to ~/.claude/adversarial/cross-model.json with a full rewrite. Before replying, check run.sh: besides cd, wait and the exit lines of the template, every command in it starts codex, agy or opencode (inside its alarm wrapper), and no line holds text from the target or the facts; fix it if not. Do not run anything. Reply with only two lines, the absolute paths of run.sh and of the verification script, or FAILED: and the reason.
