@@ -39,15 +39,19 @@ Answer only with one JSON object, with no text before or after it, in exactly th
 
 ## Verifying an external critical or high finding
 
-The Claude skeptic verifies external critical and high defects (D-04), with the skeptic prompt of
-`../review/references/workflow-spec.md` filled as follows: `{lens.key}` is the provider key
-(`openai`, `google` or `opencode:<maker>`), `{lens.question}` is `General adversarial review of the whole target (no
-lens)`, and everything else as the spec says. Dispatch one general-purpose `Agent` per finding, all
-in one message, with that prompt followed by:
+The Claude skeptic verifies external critical and high defects (D-04). The collection subagent
+writes one prompt file per such finding, `<run dir>/skeptic-<n>.txt`: the skeptic prompt of
+`../review/references/workflow-spec.md`, with `{READ_ONLY}`, `{SKEPTIC_LANGUAGE}`,
+`{SKEPTIC_RULES}`, `{SEVERITY_RUBRIC}` and `{target}` filled as the spec says, `{lens.key}` as the
+provider key (`openai`, `google` or `opencode:<maker>`), `{lens.question}` as `General adversarial
+review of the whole target (no lens)`, and the finding's own fields, followed by:
 
 ```
 Answer only with a JSON object: {"verdict": "confirmed" | "refuted" | "uncertain", "reason": "...", "adjusted_severity": "critical" | "high" | "medium" | "low" (only when it holds at a different severity)}.
 ```
 
-An agent that fails, or whose answer is not that object, leaves the finding with
-`{verdict: "uncertain", reason: "verifier failed or returned nothing"}`, as in the spec.
+The main session dispatches one general-purpose `Agent` per file, all in one message, each with only
+this prompt: `Read <run dir>/skeptic-<n>.txt in full and do exactly what it asks. Reply with only
+the JSON object it asks for.` An agent that fails, or whose answer is not that object, leaves the
+finding with `{verdict: "uncertain", reason: "verifier failed or returned nothing"}`, as in the
+spec.

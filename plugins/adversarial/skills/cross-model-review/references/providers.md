@@ -55,9 +55,12 @@ the review's own schema file.
 
 ## Commands
 
-`<root>` is the project root of the first target file, in the order the target was announced
-(RN-05). `<prompt>` is the prompt file written from `external-prompt.md`. `<out>` is a new file in
-the scratchpad. `<limit>` is 600 (seconds, RN-07): the clock starts when the command starts, which
+The preparation subagent (`SKILL.md`, Step 3) writes these commands into one run script; the main
+session never types them. `<root>` is the project root of the first target file, in the order the
+target was announced (RN-05). `<prompt>` is the prompt file written from `external-prompt.md`
+(`prompt-opencode.txt` for opencode). `<out>` is `<run dir>/out-<provider key>` (with `:` turned
+into `-`), with `.json` for Codex and Antigravity and `.jsonl` for opencode, and `<err>` the same
+name with `.err`. `<limit>` is 600 (seconds, RN-07): the clock starts when the script starts, which
 is after the permission answer.
 
 OpenAI:
@@ -96,6 +99,25 @@ configuration. The `plan` agent alone is not enough: it denies edits but leaves 
 
 Always redirect stdin (`< "<prompt>"` or `< /dev/null`): Codex waits on an open stdin.
 
+## The run script
+
+One file, `<run dir>/run.sh`, that starts every authorized provider at once and waits for all of
+them, so the person answers one permission prompt for all the external sends and the session gets
+one line per provider:
+
+```bash
+#!/usr/bin/env bash
+cd "<root>" || exit 1
+( <OpenAI command, with 2> "<err>"> ; echo "openai exit=$?" ) &
+( <Google command> ; echo "google exit=$?" ) &
+( <opencode command for one maker> ; echo "opencode:<maker> exit=$?" ) &
+wait
+```
+
+Only authorized providers get a line, each with its own `<out>` and `<err>`. Values that come from
+the run (paths, model ids) are single-quoted; nothing from the target or the facts is ever written
+into the script: they reach the tools only through the prompt files.
+
 **Natural behavior (D-54).** No command restricts what the tool reads or loads on its own: it may
 read what it can reach, and it loads its global instructions, memories, history and plugins as it
 normally would (opencode, for example, loads the Claude Code instructions from the person's home
@@ -104,6 +126,9 @@ declares this; the skill never tries to hide it, filter it or work around it. On
 blocked.
 
 ## Reading the result
+
+The collection subagent (`SKILL.md`, Step 4) reads every `<out>` and `<err>` and applies the rules
+below; the main session never reads them.
 
 For opencode, `<out>` holds one JSON event per line. Its answer is the concatenation, in order, of
 the `part.text` of the events whose `part.type` is `text`; an event with `type: "error"` makes the

@@ -43,39 +43,58 @@ origin are the same project (D-48). Without `origin`, or outside a repository, t
 
 ## Running the setup (RF-01 to RF-06)
 
-The setup runs for a project with no entry, or when the person asks for it (`setup`). Ask
-everything through `AskUserQuestion`, in the user's language.
+The setup runs for a project with no entry, or when the person asks for it (`setup`). It is one
+step: choosing a model for a provider is authorizing that provider (D-58). Ask everything through
+`AskUserQuestion`, in the user's language.
 
-1. For each CLI in `providers.md`, check that the tool is installed, then the login. Not
-   installed → not offered. Installed without login → explain how to log in (`codex login`; open
-   `agy` once and sign in; `opencode auth login`, or the free tier, which needs no login) and do
-   not offer it (D-28). A denied check → not offered (D-49).
-2. Work out the providers: `openai` from Codex, `google` from Antigravity, and the opencode makers
-   (`providers.md`, "opencode makers"), one model per provider across CLIs. For opencode, ask first
-   which makers to use (multi-select). For each provider, list its models without the Claude family
-   and ask which one to use (D-20, D-56). Up to 3 models plus the tool default as options, free ones
-   marked; the rest named in the question text for "Other".
-3. For each offered provider, show the notice below and ask: authorize / do not authorize.
-4. Save the file. If no provider is authorized, the run stops without reviewing and suggests
-   `/adversarial:review` (D-28). The setup never runs again by itself for a project that has an
-   entry; the person asks for it.
+**1. Detect, with one command and a short output.** Run exactly this (each tool's own check;
+nothing is sent to a provider), and never print a tool's raw model list in the session:
 
-**Notice** (one per provider, rendered in the user's language, as the question text):
+```bash
+for t in codex agy opencode; do command -v "$t" >/dev/null || echo "$t: not installed"; done
+command -v codex >/dev/null && { codex login status </dev/null >/dev/null 2>&1 && echo "codex: logged in" || echo "codex: no login"; }
+command -v agy >/dev/null && echo "agy: $(agy models </dev/null 2>/dev/null | cut -f1 | grep -v -i -e '^claude' -e '^fetching' | paste -sd' ' -)"
+command -v opencode >/dev/null && echo "opencode $(opencode --version </dev/null 2>/dev/null): $(opencode models </dev/null 2>/dev/null | grep -v -i '/claude' | paste -sd' ' -)"
+```
 
-> Authorizing <OpenAI through Codex | Google through Antigravity | <maker> through opencode
-> (<route>)> for <project id> sends, on every
-> cross-model review of this project: the target (including conversation text or a diff), the
-> verified facts (whole, even when they quote files of another project), any file the tool manages
-> to read on this machine, inside or outside the project, and whatever the tool loads on its own
-> (its global instructions, memories, history and plugins). Nothing is filtered, and secrets or
-> personal data in any of these go too. The tool runs read-only: it cannot change your files. You
-> can revoke this at any time with `/adversarial:cross-model-review revoke <provider key>`.
+An empty model list means no login. A tool not installed, without login (explain how to log in:
+`codex login`; open `agy` once and sign in; `opencode auth login`, or opencode's free tier, which
+needs no login), or whose check the person denied (D-49) is not offered (D-28). Work out the
+providers from what is left: `openai` from Codex, `google` from Antigravity, and the opencode makers
+(`providers.md`, "opencode makers"), one model per provider across CLIs (D-20, D-56).
 
-For an opencode model under the `opencode/` route, add: "The content goes through opencode's own
-service (OpenCode Zen) and then to <maker>." For a model whose name ends in `-free`, add: "This is
-opencode's free tier: its terms for how prompts and code are used, retained or used for training
-are usually looser than those of paid plans." (D-57) For a maker not identified, say so and name
-the route instead of a company.
+**2. Show the notice once**, as a message, before any question, since answering is authorizing:
+
+> Choosing a model for a provider authorizes it for <project id>. On every cross-model review of
+> this project, each chosen provider receives: the target (including conversation text or a diff),
+> the verified facts (whole, even when they quote files of another project), any file its tool
+> manages to read on this machine, inside or outside the project, and whatever the tool loads on its
+> own (its global instructions, memories, history and plugins). Nothing is filtered, and secrets or
+> personal data in any of these go too. The tools run read-only: they cannot change your files. You
+> can revoke a provider at any time with `/adversarial:cross-model-review revoke <provider key>`.
+
+**3. Ask, in as few calls as fit** (up to 4 questions per call):
+
+- One question for OpenAI (Codex) and one for Google (Antigravity), when offered: "Which model
+  should <provider> use in this project? Choosing one authorizes it." Options: up to 3 models (for
+  Codex, "Codex default" first), plus **"Do not use"**; the rest named in the question text for
+  "Other".
+- One multi-select question per group of up to 4 opencode makers: "Which makers should opencode use
+  in this project? Each one checked is authorized." Each option is a maker; its description names
+  its model when it has only one, or says "model chosen next" when it has several, plus the extra
+  notice below when it applies. Only a checked maker with several models gets a follow-up question
+  for its model.
+
+**Extra notice, in the option's description** (D-57): for a model under the `opencode/` route, "goes
+through opencode's own service (OpenCode Zen) to <maker>"; for a model whose name ends in `-free`,
+"free tier: terms on use, retention and training of prompts and code are usually looser than paid
+plans"; for a maker not identified, "maker not identified (<word>), route <route>".
+
+**4. Save the file.** Every chosen provider is `authorized: true` with its model and the date; every
+provider offered and not chosen ("Do not use", or a maker left unchecked) is `authorized: false`.
+If no provider is authorized, the run stops without reviewing and suggests `/adversarial:review`
+(D-28). The setup never runs again by itself for a project that has an entry; the person asks for
+it.
 
 ## Revoking
 
