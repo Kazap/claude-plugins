@@ -68,8 +68,7 @@ review of the whole target (no lens)`, and the finding's own fields, followed by
 Answer only with a JSON object: {"verdict": "confirmed" | "refuted" | "uncertain", "reason": "...", "adjusted_severity": "critical" | "high" | "medium" | "low" (only when it holds at a different severity)}.
 ```
 
-The main session dispatches one general-purpose `Agent` per file, all in one message, each with only
-this prompt: `Read <run dir>/skeptic-<n>.txt in full and do exactly what it asks. Reply with only
-the JSON object it asks for.` An agent that fails, or whose answer is not that object, leaves the
-finding with `{verdict: "uncertain", reason: "verifier failed or returned nothing"}`, as in the
-spec.
+The main session sends the files that need a skeptic to the verification workflow
+(`verify-workflow-spec.md`), one read-only skeptic per file. An agent that fails, or whose answer is
+not that object, leaves the finding with `{verdict: "uncertain", reason: "verifier failed or
+returned nothing"}`, as in the spec.

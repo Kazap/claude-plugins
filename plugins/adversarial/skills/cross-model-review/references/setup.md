@@ -47,8 +47,9 @@ The setup runs for a project with no entry, or when the person asks for it (`set
 step: choosing a model for a provider is authorizing that provider (D-58). Ask everything through
 `AskUserQuestion`, in the user's language.
 
-**1. Detect, with one command and a short output.** Run exactly this (each tool's own check;
-nothing is sent to a provider), and never print a tool's raw model list in the session:
+**1. Detect, with one command and a short output.** The preflight subagent (`SKILL.md`, Step 1) runs
+exactly this (each tool's own check; nothing is sent to a provider), so no raw model list reaches the
+session:
 
 ```bash
 for t in codex agy opencode; do command -v "$t" >/dev/null || echo "$t: not installed"; done
@@ -91,7 +92,8 @@ through opencode's own service (OpenCode Zen) to <maker>"; for a model whose nam
 "free tier: terms on use, retention and training of prompts and code are usually looser than paid
 plans"; for a maker not identified, "maker not identified (<word>), route <route>".
 
-**4. Save the file.** Every chosen provider is `authorized: true` with its model and the date; every
+**4. Save the file** (the preparation subagent does it with the rest of the run; the main session,
+only when the run stops before that, or for `setup` alone). Every chosen provider is `authorized: true` with its model and the date; every
 provider offered and not chosen ("Do not use", or a maker left unchecked) is `authorized: false`.
 If no provider is authorized, the run stops without reviewing and suggests `/adversarial:review`
 (D-28). The setup never runs again by itself for a project that has an entry; the person asks for
