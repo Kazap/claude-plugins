@@ -48,7 +48,7 @@ After:
 > - Local check before querying. UUID format and existing charge. A refund notice arrives on a closed charge by design, so "not yet closed" does not apply to it.
 ```
 
-Never a description of the change ("tighten the wording of §5.5").
+Never a description of the change ("tighten the wording of §5.5"), even when a fix rewrites several items: quote each item's current text under "Before".
 
 ## 4. Decisions, conflicts, refuted
 
