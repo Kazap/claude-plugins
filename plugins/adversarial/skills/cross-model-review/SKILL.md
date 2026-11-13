@@ -80,8 +80,10 @@ The review's Phases 1 to 3, unchanged. External models are not lenses and do not
 ### Step 3 — Prepare, then dispatch with every permission answered first
 
 1. Create a run directory in the scratchpad and write `input.json` there:
-   `{language, paths, content, facts, root, providers: [{key, model}]}`, with the same `paths`,
-   `content` and `facts` the Claude panel gets, `root` as in Step 1, and the providers of Step 1.
+   `{language, paths, content, facts, risk_vectors, root, providers: [{key, model}]}`, with the
+   same `paths`, `content` and `facts` the Claude panel gets, `risk_vectors` as the list of risk
+   vectors from the review's Phase 1 (one short line each; never the lens questions, D-59), `root`
+   as in Step 1, and the providers of Step 1.
 2. **Preparation subagent.** Dispatch one general-purpose `Agent` with this prompt, filled in, and
    wait for it:
 

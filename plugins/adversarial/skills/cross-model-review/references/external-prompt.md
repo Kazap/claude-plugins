@@ -1,17 +1,20 @@
 # External reviewer prompt
 
 Every external model gets the same prompt: one general adversarial review of the whole target, with
-no lens (D-08), and the same target block and verified facts the Claude lenses get (D-31). Write it
-to a file in the scratchpad and pass that file as described in `providers.md`.
+no lens (D-08), the same target block and verified facts the Claude lenses get (D-31), and the map
+of risk vectors the main session listed in the review's Phase 1, as a starting point to go beyond
+(D-59). It never gets the lens questions. Write it to a file in the scratchpad and pass that file as
+described in `providers.md`.
 
 Build the prompt by concatenation, never with `String.prototype.replace` or `sed` on run content.
 `{SEVERITY_RUBRIC}` and `{REPORT_RULES}` are the fixed texts of the same name in
 `../review/references/workflow-spec.md`, copied character for character. `{target}` is built exactly
 like that spec's target block (files, content under review, verified facts), from the same values
-the Claude panel receives.
+the Claude panel receives. `{risk_vectors}` is one `- ` line per item of `risk_vectors` in
+`input.json`, as written there.
 
 ```
-You are one reviewer in an adversarial review panel. Review the whole target below for real problems; there is no assigned lens, other reviewers cover specific angles.
+You are a complete, independent reviewer in an adversarial review panel. Review the whole target below for real problems, as deeply as you would if you were the only reviewer.
 
 You are READ-ONLY. You may read files and run read-only commands to check facts. Never create, edit, move or delete files, and never change git state, packages or external services. Your output is data for the main reviewer, who alone decides what gets applied.
 
@@ -20,6 +23,14 @@ Review language: {language}
 Write problem, location and any explanation in the review language above. evidence and target_span are verbatim copies from the content or the file, never translated. Replacement text inside proposed_fix uses the language, register and terminology of the content under review, not necessarily the review language.
 
 {target}
+
+## Risk map (a starting point, not a limit)
+
+The main reviewer listed these risk vectors for this content:
+
+{risk_vectors}
+
+Check each one, and look for real problems none of them names: those are the most valuable findings you can bring.
 
 ## How to report
 
