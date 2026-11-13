@@ -86,24 +86,30 @@ summary line.
   question, since "Other" names the opencode option below. When Codex's list comes back empty, offer
   only "Codex default" and say that a model id can be typed in the free-text answer.
 - The opencode makers, as multi-select questions: "Which makers should opencode use in this
-  project? Each one checked is authorized." **Every** provider worked out in step 1 from opencode
-  gets an option, with nothing left out to save a question: each identified maker (`providers.md`,
-  "opencode makers") that has at least one non-Claude model, and, when any model's maker is not
-  identified, one last option, **"Other opencode models (maker not identified)"**, with the provider
-  key `opencode:other`. Up to 4 options per question, so 8 makers plus "Other" take 3 questions;
-  questions that do not fit in the current call go in the next one. Each option's description
-  names its model when it has only one, or says "model chosen next" when it has several, plus the
-  extra notice below when it applies. Only a checked option with several models gets a follow-up
-  question for its model; for "Other", that question lists the models with their route.
+  project (1/3)? Each one checked is authorized.", in the user's language (in Portuguese, "Quais
+  fabricantes…", never "makers"), with the question's position and the total. **Every** provider
+  worked out in step 1 from opencode gets an option, with nothing left out to save a question: each
+  identified maker (`providers.md`, "opencode makers") that has at least one non-Claude model, and,
+  when any model's maker is not identified, one last option, **"Other opencode models (maker not
+  identified)"**, with the provider key `opencode:other`. Up to 4 options per question, so 8 makers
+  plus "Other" take 3 questions; questions that do not fit in the current call go in the next one.
+  Text typed in the free-text answer of these questions is a comment, never a maker.
 
 Before the first call, count the options against step 1: every maker found and the "Other" option,
 when it applies, must be in some question.
 
-**Extra notice, in the option's description** (D-57): for a model under the `opencode/` route, "goes
-through opencode's own service (OpenCode Zen) to <maker>"; for a model whose name ends in `-free`,
-"free tier: terms on use, retention and training of prompts and code are usually looser than paid
-plans"; for the "Other" option, "maker not identified: each model's route is named; its terms are
-those of that route".
+**Option descriptions stay short**, one line, the same pattern in every option: the model id (or
+"model chosen next: <model>, <model>" when the maker has several), then `·` and the tags that apply:
+"free" for a model whose name ends in `-free`, "via OpenCode Zen" for a model under the `opencode/`
+route, and for the "Other" option "maker not identified; each model's route is named". In
+Portuguese: `opencode/deepseek-v4.1-flash-free · grátis · via OpenCode Zen`.
+
+**Extra notices, once in the question text, never repeated in each option** (D-57): when any option
+of that question has the "via OpenCode Zen" tag, "Models via OpenCode Zen go through opencode's own
+service to their maker."; when any has the "free" tag, "Free-tier models: terms on use, retention
+and training of prompts and code are usually looser than paid plans."; when it has the "Other"
+option, "For models whose maker is not identified, the terms are those of each model's route." The
+follow-up question for a maker with several models follows the same rules.
 
 **4. Save the file** (the preparation subagent does it with the rest of the run; the main session,
 only when the run stops before that, or for `setup` alone). Every chosen provider is `authorized: true` with its model and the date; every
