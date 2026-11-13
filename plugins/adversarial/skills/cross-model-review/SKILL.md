@@ -171,8 +171,11 @@ The review's Phase 5, with each provider treated as one more lens whose key is i
   skeptic runs. A row's "Found by" lists every Claude lens and external provider that reported the
   same root cause at the same place.
 - **External skeptics, only where needed, in one workflow.** An external critical or high defect
-  that merged into a row whose kept fix is a panel finding already verified needs no skeptic: the
-  row keeps that verification. Every other external critical or high defect with a `skeptic_file`
+  that merged into a row whose kept fix is a panel finding the skeptic verified at that severity or
+  higher needs no skeptic: the row keeps that verification. One that merged into a row kept at a
+  lower severity, or whose panel finding the skeptic never saw (a medium or low one), is verified
+  like the others, so a higher external claim is tested, never dropped in silence; the row takes
+  the severity the verdicts support. Every other external critical or high defect with a `skeptic_file`
   (its own row, or the finding whose fix the row keeps) is verified by the verification workflow:
   first its read-only check, `grep -cF 'Never use Edit, Write, NotebookEdit, or any command that
   changes files' <run dir>/verify-workflow.js` (at least 1), `grep -c 'READ_ONLY' <same>` (exactly
@@ -192,7 +195,10 @@ The review's Phase 5, with each provider treated as one more lens whose key is i
 
 The review's Phase 6, with these changes to `../review/references/report-format.md`:
 
-- Header: add the providers with their models, and "N confirmed findings found only by external
+- Finding ids (`P<n>`, `E<n>`) and file names (`skeptic-<n>.txt`) are internal: never show them in
+  the report, in a cell, a note or a fix's origin. Name the provider or the lens instead (for
+  example, "my text, from the OpenAI and DeepSeek findings").
+- Header: add every provider with its model, the opencode makers included, and "N confirmed findings found only by external
   models". When every provider failed, say the count was not measured in this run instead of 0;
   when one failed, say the count comes only from the one that answered (RF-15).
 - Failed providers are listed like failed lenses, with their error. When `account_failure` is
