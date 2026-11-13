@@ -156,7 +156,8 @@ The review's Phase 5, with each provider treated as one more lens whose key is i
 (`openai`, `google`, `opencode:<maker>`):
 
 - **Integrity** first, as in the review: compare `fingerprints` in `collected.json` with those in
-  `preflight.json`; a target whose hash changed ends the run (D-40), whoever changed it.
+  `preflight.json`, without recomputing them yourself; a target whose hash changed ends the run
+  (D-40), whoever changed it.
 - **Shape check**: the collection subagent ran the review's check on the panel result and wrote its
   outcome on the first line of `compact.txt`; a failed check is a script failure, handled as the
   review's Phase 4 says. External results were already validated in Step 4.

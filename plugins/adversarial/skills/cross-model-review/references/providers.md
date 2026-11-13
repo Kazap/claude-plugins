@@ -33,7 +33,8 @@ The maker comes from the model name (the part after `<route>/`), by its first wo
 `o9` → `openai`; `gemini` → `google`; `grok` → `xai`; `kimi` → `moonshot`; `deepseek` → `deepseek`;
 `glm` → `zhipu`; `minimax` → `minimax`; `nemotron` → `nvidia`; `mimo` → `xiaomi`; `longcat` →
 `meituan`; `qwen` → `alibaba`; `mistral`, `codestral`, `devstral` → `mistral`; `llama` → `meta`; `mai` → `microsoft`.
-Any other first word is its own maker, shown to the person as "maker not identified (<word>)".
+Any other first word belongs to one shared provider, `opencode:other` ("Other opencode models
+(maker not identified)"): it holds at most one model, like any provider.
 
 **Route.** Models under the `opencode/` route are served by opencode's own service (OpenCode Zen);
 those whose name ends in `-free` are its free tier, offered with the free-tier notice of

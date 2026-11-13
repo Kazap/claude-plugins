@@ -64,7 +64,9 @@ needs no login), or whose check the person denied (D-49) is not offered (D-28). 
 providers from what is left: `openai` from Codex, `google` from Antigravity, and the opencode makers
 (`providers.md`, "opencode makers"), one model per provider across CLIs (D-20, D-56).
 
-**2. Show the notice once**, as a message, before any question, since answering is authorizing:
+**2. Show the notice once**, before any question, since answering is authorizing: as its own message,
+with the full text below as a quote block, in the user's language. Never shorten it into a status or
+summary line.
 
 > Choosing a model for a provider authorizes it for <project id>. On every cross-model review of
 > this project, each chosen provider receives: the target (including conversation text or a diff),
@@ -82,15 +84,18 @@ providers from what is left: `openai` from Codex, `google` from Antigravity, and
   the question text for "Other". When Codex's list comes back empty, offer only "Codex default" and
   accept an id typed in "Other".
 - One multi-select question per group of up to 4 opencode makers: "Which makers should opencode use
-  in this project? Each one checked is authorized." Each option is a maker; its description names
-  its model when it has only one, or says "model chosen next" when it has several, plus the extra
-  notice below when it applies. Only a checked maker with several models gets a follow-up question
-  for its model.
+  in this project? Each one checked is authorized." Each option is an identified maker; its
+  description names its model when it has only one, or says "model chosen next" when it has several,
+  plus the extra notice below when it applies. All the models whose maker is not identified share
+  one last option, **"Other opencode models (maker not identified)"**, with the provider key
+  `opencode:other`. Only a checked option with several models gets a follow-up question for its
+  model; for "Other", that question lists the models with their route.
 
 **Extra notice, in the option's description** (D-57): for a model under the `opencode/` route, "goes
 through opencode's own service (OpenCode Zen) to <maker>"; for a model whose name ends in `-free`,
 "free tier: terms on use, retention and training of prompts and code are usually looser than paid
-plans"; for a maker not identified, "maker not identified (<word>), route <route>".
+plans"; for the "Other" option, "maker not identified: each model's route is named; its terms are
+those of that route".
 
 **4. Save the file** (the preparation subagent does it with the rest of the run; the main session,
 only when the run stops before that, or for `setup` alone). Every chosen provider is `authorized: true` with its model and the date; every
