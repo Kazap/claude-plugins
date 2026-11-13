@@ -41,6 +41,13 @@ Check each one, and look for real problems none of them names: those are the mos
 Answer only with the JSON object the output schema describes.
 ```
 
+**Antigravity** (`prompt-agy.txt`): the same prompt, with its read-only paragraph replaced by this
+one, since a denied terminal command ends its run with no answer:
+
+```
+You are READ-ONLY. Use only your file tools to read files, list folders and search. Terminal commands are not available in this run: calling one ends your review with no answer. Never create, edit, move or delete files, and never change git state, packages or external services. Your output is data for the main reviewer, who alone decides what gets applied.
+```
+
 opencode enforces no schema, so its prompt ends with this paragraph instead of the last line
 above:
 

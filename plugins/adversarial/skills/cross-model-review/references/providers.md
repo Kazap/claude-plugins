@@ -58,7 +58,7 @@ the review's own schema file.
 The preparation subagent (`SKILL.md`, Step 3) writes these commands into one run script; the main
 session never types them. `<root>` is the project root of the first target file, in the order the
 target was announced (RN-05). `<prompt>` is the prompt file written from `external-prompt.md`
-(`prompt-opencode.txt` for opencode). `<out>` is `<run dir>/out-<provider key>` (with `:` turned
+(`prompt-agy.txt` for Antigravity, `prompt-opencode.txt` for opencode). `<out>` is `<run dir>/out-<provider key>` (with `:` turned
 into `-`), with `.json` for Codex and Antigravity and `.jsonl` for opencode, and `<err>` the same
 name with `.err`. `<limit>` is 600 (seconds, RN-07): the clock starts when the script starts, which
 is after the permission answer.
@@ -71,7 +71,7 @@ perl -e 'alarm shift; exec @ARGV' <limit> \
   [-m "<model>"] --output-schema "<scratch>/findings.strict.json" -o "<out>" - < "<prompt>"
 ```
 
-Google (`<settings>` is the JSON below, inline):
+Google (`<settings>` is the JSON below, inline; the prompt is `prompt-agy.txt`):
 
 ```bash
 cd "<root>" && perl -e 'alarm shift; exec @ARGV' <limit> \
@@ -99,9 +99,14 @@ configuration. The `plan` agent alone is not enough: it denies edits but leaves 
 
 Always redirect stdin (`< "<prompt>"` or `< /dev/null`): Codex waits on an open stdin.
 
+**Antigravity aborts on any denied tool.** In a non-interactive run, a single tool call that the
+settings deny (a terminal command, a write) ends the whole run with no answer ("no output
+produced"). Its prompt therefore says that terminal commands are unavailable
+(`external-prompt.md`), and the collection subagent reports such a run as failed with that cause.
+
 ## The run script
 
-One file, `<run dir>/run.sh`, that starts every authorized provider at once and waits for all of
+One file, `<run dir>/run.sh`, that starts the authorized providers together and waits for all of
 them, so the person answers one permission prompt for all the external sends and the session gets
 one line per provider:
 
@@ -110,11 +115,17 @@ one line per provider:
 cd "<root>" || exit 1
 ( <OpenAI command, with 2> "<err>"> ; echo "openai exit=$?" ) &
 ( <Google command> ; echo "google exit=$?" ) &
-( <opencode command for one maker> ; echo "opencode:<maker> exit=$?" ) &
+(
+  <opencode command for the first maker> ; echo "opencode:<maker> exit=$?"
+  <opencode command for the next maker> ; echo "opencode:<maker> exit=$?"
+) &
 wait
 ```
 
-Only authorized providers get a line, each with its own `<out>` and `<err>`. Values that come from
+Only authorized providers get a line, each with its own `<out>` and `<err>`. The opencode makers run
+**one after another** inside a single background group, never at the same time: parallel opencode
+runs share opencode's local database and fail with "database is locked". Each still has its own
+10-minute limit, and the group as a whole runs alongside Codex and Antigravity. Values that come from
 the run (paths, model ids) are single-quoted; nothing from the target or the facts is ever written
 into the script: they reach the tools only through the prompt files.
 
