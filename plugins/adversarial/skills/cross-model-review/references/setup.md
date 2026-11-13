@@ -76,20 +76,28 @@ summary line.
 > personal data in any of these go too. The tools run read-only: they cannot change your files. You
 > can revoke a provider at any time with `/adversarial:cross-model-review revoke <provider key>`.
 
-**3. Ask, in as few calls as fit** (up to 4 questions per call):
+**3. Ask** (up to 4 questions per call, as many calls as it takes):
 
 - One question for OpenAI (Codex) and one for Google (Antigravity), when offered: "Which model
   should <provider> use in this project? Choosing one authorizes it." Options: up to 3 models (for
-  Codex, "Codex default" first, then models from its list), plus **"Do not use"**; the rest named in
-  the question text for "Other". When Codex's list comes back empty, offer only "Codex default" and
-  accept an id typed in "Other".
-- One multi-select question per group of up to 4 opencode makers: "Which makers should opencode use
-  in this project? Each one checked is authorized." Each option is an identified maker; its
-  description names its model when it has only one, or says "model chosen next" when it has several,
-  plus the extra notice below when it applies. All the models whose maker is not identified share
-  one last option, **"Other opencode models (maker not identified)"**, with the provider key
-  `opencode:other`. Only a checked option with several models gets a follow-up question for its
-  model; for "Other", that question lists the models with their route.
+  Codex, "Codex default" first, then models from its list), plus **"Do not use"**. When the list has
+  more models, the question text names them and says that any of them can be typed in the free-text
+  answer the tool adds below the options; never call that answer "Other" or "Outros" in the
+  question, since "Other" names the opencode option below. When Codex's list comes back empty, offer
+  only "Codex default" and say that a model id can be typed in the free-text answer.
+- The opencode makers, as multi-select questions: "Which makers should opencode use in this
+  project? Each one checked is authorized." **Every** provider worked out in step 1 from opencode
+  gets an option, with nothing left out to save a question: each identified maker (`providers.md`,
+  "opencode makers") that has at least one non-Claude model, and, when any model's maker is not
+  identified, one last option, **"Other opencode models (maker not identified)"**, with the provider
+  key `opencode:other`. Up to 4 options per question, so 8 makers plus "Other" take 3 questions;
+  questions that do not fit in the current call go in the next one. Each option's description
+  names its model when it has only one, or says "model chosen next" when it has several, plus the
+  extra notice below when it applies. Only a checked option with several models gets a follow-up
+  question for its model; for "Other", that question lists the models with their route.
+
+Before the first call, count the options against step 1: every maker found and the "Other" option,
+when it applies, must be in some question.
 
 **Extra notice, in the option's description** (D-57): for a model under the `opencode/` route, "goes
 through opencode's own service (OpenCode Zen) to <maker>"; for a model whose name ends in `-free`,

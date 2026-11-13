@@ -16,13 +16,13 @@ Google when Codex or Antigravity is not offered in that setup.
 | Provider key | `openai` | `google` | `opencode:<maker>` (below) |
 | Installed | `command -v codex` | `command -v agy` | `command -v opencode` |
 | Login check | `codex login status` exits 0 and prints "Logged in" | `agy models` exits 0 and lists at least one model | `opencode models` exits 0 and lists at least one model |
-| Models | "the default model of your Codex configuration", plus the `slug` of each entry of `models` with `"visibility": "list"` printed by `codex debug models` (Codex's own catalog command; nothing is read from Codex's folder), plus any id the person types in "Other" | one per line from `agy models`, first column (`gemini-4-argon-medium<TAB>Gemini 4 Argon (Medium)`) | one per line from `opencode models` (`<route>/<model>`), grouped by maker |
+| Models | "the default model of your Codex configuration", plus the `slug` of each entry of `models` with `"visibility": "list"` printed by `codex debug models` (Codex's own catalog command; nothing is read from Codex's folder), plus any id the person types in the free-text answer | one per line from `agy models`, first column (`gemini-4-argon-medium<TAB>Gemini 4 Argon (Medium)`) | one per line from `opencode models` (`<route>/<model>`), grouped by maker |
 | Read-only | `-s read-only` (the OS sandbox blocks writes) | `--mode plan --sandbox` plus session settings that deny writes and commands (below) | `--agent plan` plus session permissions that deny shell, edits and web fetch for every agent, subagents included (below); denied tools disappear from the model's tool list |
 | Structured output | `--output-schema <strict schema>` and `-o <out file>`; the out file is the JSON object | `--json-schema <strict schema> --output-format json`; the result is the `structured_output` field of the printed object | none enforced: the prompt asks for the JSON shape and the answer is validated (below) |
 
 **Claude family.** Drop every model whose id, model name or display name starts with `claude`
 (case-insensitive), in every CLI and route, including opencode's `github-copilot/claude-*` (D-10).
-Never offer it, even typed in "Other".
+Never offer or accept it, even typed in the free-text answer.
 
 **Login query denied.** If the person denies the permission for an installed-or-login check, that
 CLI is not offered in this setup (D-49). It is not a failure of the run.
@@ -42,9 +42,10 @@ those whose name ends in `-free` are its free tier, offered with the free-tier n
 or gave a key to) send through that route's account. The free tier needs opencode 1.18.0 or newer:
 with an older `opencode --version`, do not offer `opencode/` models and say to update it.
 
-In the setup, list the makers that have at least one non-Claude model, as a multi-select question
-(up to 4 per question, more questions for more makers); then, for each chosen maker, ask for its
-model (free ones marked), then show its notice and ask for its authorization.
+In the setup, every maker that has at least one non-Claude model, plus "Other" when it applies, is
+an option of a multi-select question (up to 4 per question, more questions for more makers, none
+left out); checking a maker authorizes it, and a checked maker with several models gets one more
+question for its model (`setup.md`, step 3).
 
 ## Strict schema
 
