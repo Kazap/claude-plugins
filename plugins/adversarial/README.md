@@ -119,13 +119,14 @@ one for the other.
   or the plain-text LICENSE.
 - `/adversarial:review` makes no network calls and reads no credential, token or environment
   variable.
-- `/adversarial:cross-model-review` runs, through your normal permission prompts, `codex`, `agy`
-  and/or `opencode`: to check that they are installed and logged in (`codex login status`,
-  `agy models`, `opencode models`), to list models, and to review read-only
-  (`codex exec -s read-only`; `agy -p --mode plan --sandbox` with writes and commands denied;
-  `opencode run --agent plan` with shell, edits and web fetch denied for that run only). Those tools
-  send the content to the providers you authorized, under your own accounts or opencode's free
-  tier. It writes `~/.claude/adversarial/cross-model.json` with your choices.
+- `/adversarial:cross-model-review` calls the Codex, Antigravity and opencode CLIs you already have
+  installed, through your normal permission prompts. It asks each one whether it is logged in and
+  which models it offers, then has it review the target in its read-only mode: Codex in its
+  read-only sandbox, Antigravity in plan mode inside its sandbox with writes and commands denied,
+  and opencode with its plan agent and shell, edits and web fetch denied for that run only. It
+  downloads nothing. Those tools send the content to the providers you authorized, under your own
+  accounts or opencode's free tier. It writes `~/.claude/adversarial/cross-model.json` with your
+  choices.
 - The review runs through Claude Code's Workflow tool, with a script Claude writes in your session
   from `workflow-spec.md`. The spec allows only the runtime's `agent()`, `pipeline()`, `parallel()`,
   `phase()` and `log()`, one agent per lens plus one skeptic per critical/high defect (decisions
