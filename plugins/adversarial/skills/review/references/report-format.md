@@ -14,7 +14,7 @@ Every number is counted from the workflow result or your consolidated list. Dura
 
 | # | Severity | Problem | Location | Lenses | Verification |
 |---|---|---|---|---|---|
-| 1 | high | One sentence. | §5.5, "Confirmation" | 2 | confirmed |
+| 1 | high | One sentence. | §4.2, "Retention" | 2 | confirmed |
 | 2 | medium | One sentence. | `lib/x.ts:42` | 1 | checked by me |
 | 3 | medium | One sentence. | §7.2 | 3 | confirmed (was high) |
 | 4 | medium | One sentence. | §3 | 1 | checked by me · conflicts with #5 |
@@ -42,14 +42,14 @@ For files, a fenced unified diff:
 For prose, the literal text before and after, in the document's own language:
 
 ```
-**#1** · §5.5, "Confirmation"
+**#1** · §4.2, "Retention"
 Before:
-> - Local check before querying. UUID format, existing charge, not yet closed.
+> - Logs are kept for 30 days and then deleted by the nightly job.
 After:
-> - Local check before querying. UUID format and existing charge. A refund notice arrives on a closed charge by design, so "not yet closed" does not apply to it.
+> - Logs are kept for 30 days and then deleted by the nightly job, except logs under a legal hold, which the job skips.
 ```
 
-Never a description of the change ("tighten the wording of §5.5"), even when a fix rewrites several items: quote each item's current text under "Before". "Before" quotes the passage the fix changes, and the block's location names where the new text goes.
+Never a description of the change ("tighten the wording of §4.2"), even when a fix rewrites several items: quote each item's current text under "Before". "Before" quotes the passage the fix changes, and the block's location names where the new text goes.
 
 **Combined.** Rows that share a passage (SKILL.md Phase 5 step 8, item 5) get one more block after theirs, titled with their numbers ("Combined #1 + #2 + #4"), holding the whole passage with all of them applied, written out in full: never "[…]", "rest of #2" or a row number standing for text.
 

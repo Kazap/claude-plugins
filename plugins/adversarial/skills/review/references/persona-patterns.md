@@ -25,7 +25,7 @@ to a cheaper model. "To save tokens" alone is not a reason.
 A good question names the concrete fact it tests and tells the lens what to open:
 
 - Weak: "Check deployment risks."
-- Strong: "The plan says the Expires field renews on every deploy. Read `.github/workflows/deploy-*.yml` and `Dockerfile.web`: when does the build actually run, and can a production image be older than 180 days?"
+- Strong: "The plan says the cache is cleared on every release. Read the release workflow under `.github/workflows/` and the build script: which step clears it, and what happens to entries written while the release runs?"
 
 ## Worked examples by content type
 

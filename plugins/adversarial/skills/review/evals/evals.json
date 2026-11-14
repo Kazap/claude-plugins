@@ -227,7 +227,7 @@
     },
     {
       "id": 12,
-      "prompt": "/adversarial:review docs/design.md --fix — [one finding has kind 'decision' with severity high: 'cap the booking window at 7h–21h, or no cap']",
+      "prompt": "/adversarial:review docs/design.md --fix — [one finding has kind 'decision' with severity high: 'cap uploads at 50 MB, or no cap']",
       "expected_output": "Treats the finding as a decision: never auto-applies it, asks it as its own AskUserQuestion with the options, even with --fix.",
       "files": [],
       "assertions": [
