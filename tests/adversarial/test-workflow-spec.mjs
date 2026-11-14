@@ -86,7 +86,7 @@ const finding = (over = {}) => ({
 const lens = (key, over = {}) => ({ key, question: `question for ${key}`, ...over });
 
 const baseArgs = over => ({
-  language: "Brazilian Portuguese",
+  language: "Test Language",
   content: "content",
   lenses: [lens("a"), lens("b"), lens("c")],
   ...over,
@@ -120,7 +120,7 @@ test("every lens prompt forbids edits and pins the language", async () => {
   for (const c of h.calls) {
     assert.match(c.prompt, /READ-ONLY/);
     assert.match(c.prompt, /Never use Edit, Write, NotebookEdit/);
-    assert.match(c.prompt, /Brazilian Portuguese/);
+    assert.match(c.prompt, /Test Language/);
   }
 });
 
@@ -330,7 +330,7 @@ test("fixed text reaches every prompt character for character; no plugin file is
       : ["READ_ONLY", "LENS_LANGUAGE", "SEVERITY_RUBRIC", "REPORT_RULES"];
     for (const n of want) assert.ok(c.prompt.includes(FIXED[n]), `${n} missing in ${c.opts.label}`);
     assert.doesNotMatch(c.prompt, /brief|workflow-spec|references\//i);
-    assert.match(c.prompt, /Review language: Brazilian Portuguese/);
+    assert.match(c.prompt, /Review language: Test Language/);
   }
 });
 test("prompt order: READ_ONLY, language, target, lens question, report rules", async () => {

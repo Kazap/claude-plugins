@@ -3,9 +3,9 @@
 set -euo pipefail
 mkdir -p docs
 cat > docs/plan.md <<'PLAN'
-# Plano: limpeza de sessões expiradas
+# Plan: clean up expired sessions
 
-1. Criar um job que roda a cada 5 minutos e executa `DELETE FROM sessions WHERE expires_at < now()`.
-2. O job roda em todas as 4 réplicas da aplicação ao mesmo tempo, sem lock.
-3. A tabela `sessions` tem 40 milhões de linhas e não tem índice em `expires_at`.
+1. Create a job that runs every 5 minutes and executes `DELETE FROM sessions WHERE expires_at < now()`.
+2. The job runs on all 4 application replicas at the same time, with no lock.
+3. The `sessions` table has 40 million rows and no index on `expires_at`.
 PLAN
