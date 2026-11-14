@@ -44,9 +44,10 @@ Phase 0 target resolution and fingerprint, Phases 1 to 3 (lenses and effort), Ph
 dispatch), Phase 5 (consolidation) and Phase 6 (report, gate and application) all apply here, with
 only the differences below. There is no caller contract: no skill calls this one.
 
-**Keep the session clean.** The person sees this conversation. Read only `references/setup.md`
-(when a setup runs), the run directory's `preflight.json` and `collected.json`, and, at Step 6,
-`../review/references/report-format.md`. Never read
+**Keep the session clean.** The person sees this conversation. Read only `../review/SKILL.md`
+(once), `references/setup.md` (when a setup runs), the run directory's `preflight.json`,
+`collected.json`, `compact.txt`, `fixes.txt` and, when you must check one, `findings/<id>.md`, and,
+at Step 6, `../review/references/report-format.md`. Never read
 `references/providers.md`, `references/external-prompt.md`, `references/verify-workflow-spec.md`
 or the review's `workflow-spec.md` yourself: the subagents of Steps 1, 3 and 4 do. Read files with the `Read` tool, never `cat`. Never
 print a raw tool output, a provider's answer, a schema or a prompt in the session; announce each
@@ -158,8 +159,8 @@ The external skeptics run inside Step 5, after the dedupe, and only where they a
 
 ### Step 5 — Consolidate
 
-The review's Phase 5, with each provider treated as one more lens whose key is its provider key
-(`openai`, `google`, `opencode:<maker>`):
+The review's Phase 5, steps 1 to 9 (its fix checklist included), with each provider treated as one
+more lens whose key is its provider key (`openai`, `google`, `opencode:<maker>`):
 
 - **Integrity** first, as in the review: the collection subagent's "fingerprints:" line compares
   them with `preflight.json`; take it as given, with no command of your own. A target whose hash
@@ -206,9 +207,7 @@ The review's Phase 6, with these changes to `../review/references/report-format.
   <provider>`, or `setup` to choose another model." Dropped findings of a provider that answered
   are counted in one line under the header, from `dropped`.
 - The table's "Lenses" column becomes "Found by" (Claude lens keys and provider keys).
-- Every label and value is in the user's language, as `report-format.md` says: severities,
-  verification values and section titles included (in Portuguese, "crítica", "alta", "confirmada
-  pelo cético", "Correções"; never "critical", "skeptic" or "Fixes").
+- Every label and value follows the review's **Language** rule.
 
 Application, backups and closing follow the review exactly. No second round is offered
 automatically; offer it as the review does (rule 8).
