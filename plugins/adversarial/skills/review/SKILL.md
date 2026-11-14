@@ -60,7 +60,7 @@ The calling skill's instructions are already in this conversation. They may hand
 
 ## Every pending decision uses a structured question
 
-Target disambiguation, application choices, conflicts, decisions, re-runs, and the follow-ups after application ("implement now?", "record as an ADR?") all go through `AskUserQuestion`, never as a plain-text question. A paragraph ending in a question mark is easy to skim past, and a one-word reply to it ("1") is easy to over-read.
+Target disambiguation, application choices, conflicts, decisions, re-runs, and the follow-ups after application ("implement now?", "record as an ADR?") all go through `AskUserQuestion`, never as a plain-text question. The one exception is a session without that tool: Phase 6 rule 1 says what to do there. A paragraph ending in a question mark is easy to skim past, and a one-word reply to it ("1") is easy to over-read.
 
 Tool limits: up to 4 questions per call, 2 to 4 options per question; the tool adds "Other" for free text. More items → more calls. Put the recommended option first and label it. Drop any option that would do nothing different from another one. A batch with a single row becomes a yes/no question. When several questions share a call, order them: conflicts, decisions, rows, backup.
 
