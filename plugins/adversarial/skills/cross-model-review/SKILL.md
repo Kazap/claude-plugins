@@ -75,7 +75,7 @@ of your own to list, parse or print findings, collected results or fingerprints.
 
 ### Step 1 — Preflight, projects and authorization
 
-1. **Preflight subagent.** Choose a new run directory in the scratchpad (the subagent creates it;
+1. **Preflight subagent.** Choose a new run directory in the scratchpad directory your system prompt names, never a folder found by its name in the working directory's path (the subagent creates it;
    no command of yours). Dispatch one general-purpose
    `Agent` with this prompt, filled in, and wait for it; it runs the preparatory commands so they
    stay out of this conversation:
