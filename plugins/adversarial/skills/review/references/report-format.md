@@ -66,7 +66,7 @@ Never a description of the change ("tighten the wording of §4.2"), even when a 
 
 | Option | Meaning |
 |---|---|
-| All verified (Recommended) | every row whose verification is not `unverified`, `fix written by me`, `outside the target`, `changes a business rule`, or in conflict |
+| All verified (Recommended) | every row whose verification is not `unverified`, `fix written by me`, `outside the target`, `changes a business rule`, a fix with a placeholder, or in conflict |
 | Critical and high only | same filter, critical/high rows only |
 | Pick item by item | follow-up calls: batches of up to 4 rows per multiSelect question |
 | None | nothing is applied |
