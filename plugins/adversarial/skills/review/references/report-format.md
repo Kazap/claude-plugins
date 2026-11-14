@@ -23,7 +23,7 @@ Every number is counted from the workflow result or your consolidated list. Dura
 - Sorted critical → low. Short cells. Decisions are not in the table.
 - No diff inside the table: a markdown cell can't hold a multi-line diff.
 - `#n` names a table row only. Never refer to a raw finding by its position in the workflow result ("the original #5", "#6 and #16 were high"): it collides with the row numbers. Name the lens instead.
-- Verification values: `confirmed` (skeptic), `confirmed (was <severity>)`, `checked by me`, `unverified`, plus `fix written by me`, `outside the target`, and `conflicts with #n` when they apply.
+- Verification values: `confirmed` (skeptic), `confirmed (was <severity>)`, `checked by me`, `unverified`, plus `fix written by me`, `outside the target`, `changes a business rule`, and `conflicts with #n` when they apply.
 - A merged row whose severity went DOWN carries the reason in its fix block.
 - A heading quoted in Location stays verbatim, like any quote.
 
@@ -64,7 +64,7 @@ Never a description of the change ("tighten the wording of §5.5"), even when a 
 
 | Option | Meaning |
 |---|---|
-| All verified (Recommended) | every row whose verification is not `unverified`, `fix written by me`, `outside the target`, or in conflict |
+| All verified (Recommended) | every row whose verification is not `unverified`, `fix written by me`, `outside the target`, `changes a business rule`, or in conflict |
 | Critical and high only | same filter, critical/high rows only |
 | Pick item by item | follow-up calls: batches of up to 4 rows per multiSelect question |
 | None | nothing is applied |
