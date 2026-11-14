@@ -18,7 +18,7 @@ Without the `Workflow` tool, do not run: there is no fallback with per-agent eff
 
 **Language.** Write every report, question, and status message in the user's language, and pass that language to the lenses as free text in `args.language` (e.g. "Brazilian Portuguese"). Severity and verification labels are translated in the report, and so are section titles (in Portuguese: "crítica", "alta", "média", "baixa", "confirmada pelo cético", "Correções", "Antes:", "Depois:", "a lente", "as lentes"; never "critical", "high", "skeptic", "Fixes", "Before:", "After:" or "o lente"). Quotes (`evidence`, `target_span`) stay verbatim, and replacement text keeps the language and register of the document under review.
 
-**Keep the session clean.** Read this skill's reference files and any result file with the `Read` tool (with `offset` and `limit` for a large one), never with `cat`, `head` or a script of your own that prints them: those put the whole text into the conversation the user sees. While a subagent or the workflow works, wait for its notification: never poll (`sleep`, `ls`, `ReadNotifications`), and never schedule a wakeup, a loop or a cron job (`ScheduleWakeup`, `CronCreate`, `/loop`). A review never restarts itself; only the user starts another one.
+**Keep the session clean.** Read this skill's reference files and any result file with the `Read` tool (with `offset` and `limit` for a large one), never with `cat`, `head` or a script of your own that prints them: those put the whole text into the conversation the user sees. While a subagent or the workflow works, wait for its notification: never run a command only to wait or poll (`sleep`, `echo`, `ls`, `ReadNotifications`), and never schedule a wakeup, a loop or a cron job (`ScheduleWakeup`, `CronCreate`, `/loop`). A review never restarts itself; only the user starts another one.
 
 ## Core rule — only `--fix` unlocks automatic application
 
@@ -150,7 +150,7 @@ In this order:
    - Medium/low whose fix depends on a claim about a file or external behavior: open the evidence yourself (read the file:line, grep the quote). Doesn't hold → refuted. Can't check → unverified.
    - Medium/low about wording or internal consistency: confirm the quote exists in the target AND that the problem holds when you read the passage in context.
    - Decisions don't go to the skeptic. Confirm the quote exists and that the choice is real; a decision whose premise doesn't hold is refuted.
-   - A lens that returned only a description of the fix: write the literal text yourself and mark the row "fix written by me".
+   - A lens that returned only a description of the fix: write the literal text yourself and mark the row "fix written by me". Working from lens text is not writing: merging fixes, trimming an overlap, restoring dropped text, reordering for coherence or turning a number into a placeholder marks the row "fix adjusted by me", which stays in the bulk option.
    - **Business rules.** A fix that changes a policy the target states on purpose, where the finding is about its cost or a preference rather than a failure it causes (a discount becomes non-cumulative, a payment method leaves the scope, a customer group stops being eligible), is marked `changes a business rule`. A fix to text that causes the failure the finding shows (a rollout with no test that refunds twice, a goal that cannot be measured, a deadline computed wrong) is not, even when the text was written on purpose. It is never applied through a bulk option: only a decision or "Pick item by item" applies it.
    - **Fix completeness.** A fix that rewrites a passage keeps every statement in it that its own finding does not dispute (amounts, percentages, names, deadlines): restore anything it dropped, so applying the row alone never deletes a rule another row or a decision is about. A value the target does not give and the fix or a decision option needs (a goal, a limit, a percentage, a deadline) is a bracketed placeholder, `[X%]`, never a number a lens made up.
    - **Repeated** (only with settled points from a caller). A finding that contests a settled point without a fact the decision did not have leaves the table and goes to "Repeated" with the point's ID. It is not asked and not applied.
@@ -175,7 +175,7 @@ In this order:
 | 1 | Refuted | never apply; listed under "Refuted" |
 | 2 | In a conflict | ask |
 | 3 | Fix edits any file outside the target files (read the files the fix touches, not just its Location). For a mixed target, only the conversation content counts as target; the files in `paths` are context | ask |
-| 4 | Fix written by me | ask |
+| 4 | Fix written or adjusted by me | ask |
 | 5 | Unverified | ask |
 | 6 | Verified, critical or high | with `--fix`: apply. Without: ask |
 | 7 | Verified, 2+ lenses agree on the fix | with `--fix`: apply. Without: ask |

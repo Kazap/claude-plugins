@@ -23,7 +23,7 @@ Every number is counted from the workflow result or your consolidated list. Dura
 - Sorted critical → low. Short cells. Decisions are not in the table.
 - No diff inside the table: a markdown cell can't hold a multi-line diff.
 - `#n` names a table row only. Never refer to a raw finding by its position in the workflow result ("the original #5", "#6 and #16 were high"): it collides with the row numbers. Name the lens instead.
-- Verification values: `confirmed` (skeptic), `confirmed (was <severity>)`, `checked by me`, `unverified`, plus `fix written by me`, `outside the target`, `changes a business rule`, `depends on #n`, and `conflicts with #n` when they apply.
+- Verification values: `confirmed` (skeptic), `confirmed (was <severity>)`, `checked by me`, `unverified`, plus `fix written by me`, `fix adjusted by me`, `outside the target`, `changes a business rule`, `depends on #n`, and `conflicts with #n` when they apply.
 - A merged row whose severity went DOWN carries the reason in its fix block.
 - A heading quoted in Location stays verbatim, like any quote.
 
@@ -51,7 +51,7 @@ After:
 
 Never a description of the change ("tighten the wording of §5.5"), even when a fix rewrites several items: quote each item's current text under "Before". "Before" quotes the passage the fix changes, and the block's location names where the new text goes.
 
-**Same passage, several rows.** When two or more compatible rows change the same passage (one replaces it, others add to it), add after their blocks one **Combined** block: the whole passage as it reads with all of them applied, in application order, written out in full (never "[…]", "rest of #2" or a row number standing for text). That is the text that lands if they are all approved, so read it as the document's reader would: if it is out of order (a step that says it runs before an earlier step), repeats itself or contradicts itself (an unchanged step that no longer matches the new ones), rewrite those rows' fixes until the combined passage reads right, and mark them "fix written by me"; if only some are, show the recomputed passage before applying. A fix that relies on text another row introduces ("the pending row", "the status column") is marked `depends on #n`: choosing it without #n asks first.
+**Same passage, several rows.** When two or more compatible rows change the same passage (one replaces it, others add to it), add after their blocks one **Combined** block: the whole passage as it reads with all of them applied, in application order, written out in full (never "[…]", "rest of #2" or a row number standing for text). That is the text that lands if they are all approved, so read it as the document's reader would: if it is out of order (a step that says it runs before an earlier step), repeats itself or contradicts itself (an unchanged step that no longer matches the new ones), rewrite those rows' fixes until the combined passage reads right, and mark them "fix adjusted by me"; if only some are, show the recomputed passage before applying. A fix that relies on text another row introduces ("the pending row", "the status column") is marked `depends on #n`: choosing it without #n asks first.
 
 ## 4. Decisions, conflicts, refuted
 
