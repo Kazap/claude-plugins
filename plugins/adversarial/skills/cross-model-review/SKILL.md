@@ -51,7 +51,7 @@ only the differences below. There is no caller contract: no skill calls this one
 or the review's `workflow-spec.md` yourself: the subagents of Steps 1, 3 and 4 do. Read files with the `Read` tool, never `cat`. Never
 print a raw tool output, a provider's answer, a schema or a prompt in the session; announce each
 step in one line. While a subagent, a workflow or the run script works, wait for its notification:
-never run a command only to wait or poll (`sleep`, `echo`).
+never run a command only to wait or poll (`sleep`, `echo`, `ls`, `ReadNotifications`), and never schedule a wakeup, a loop or a cron job (`ScheduleWakeup`, `CronCreate`, `/loop`). A review never restarts itself.
 
 **Compact reading.** The collection subagent (Step 4) writes `compact.txt`, one line per finding
 from the panel (`P<n>`) and from the external models (`E<n>`), and one file per finding,

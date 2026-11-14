@@ -18,7 +18,7 @@ Without the `Workflow` tool, do not run: there is no fallback with per-agent eff
 
 **Language.** Write every report, question, and status message in the user's language, and pass that language to the lenses as free text in `args.language` (e.g. "Brazilian Portuguese"). Severity and verification labels are translated in the report, and so are section titles (in Portuguese: "crítica", "alta", "média", "baixa", "confirmada pelo cético", "Correções"; never "critical", "high", "skeptic" or "Fixes"). Quotes (`evidence`, `target_span`) stay verbatim, and replacement text keeps the language and register of the document under review.
 
-**Keep the session clean.** Read this skill's reference files and any result file with the `Read` tool (with `offset` and `limit` for a large one), never with `cat`, `head` or a script of your own that prints them: those put the whole text into the conversation the user sees.
+**Keep the session clean.** Read this skill's reference files and any result file with the `Read` tool (with `offset` and `limit` for a large one), never with `cat`, `head` or a script of your own that prints them: those put the whole text into the conversation the user sees. While a subagent or the workflow works, wait for its notification: never poll (`sleep`, `ls`, `ReadNotifications`), and never schedule a wakeup, a loop or a cron job (`ScheduleWakeup`, `CronCreate`, `/loop`). A review never restarts itself; only the user starts another one.
 
 ## Core rule — only `--fix` unlocks automatic application
 
