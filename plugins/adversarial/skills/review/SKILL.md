@@ -151,6 +151,7 @@ In this order:
    - Medium/low about wording or internal consistency: confirm the quote exists in the target AND that the problem holds when you read the passage in context.
    - Decisions don't go to the skeptic. Confirm the quote exists and that the choice is real; a decision whose premise doesn't hold is refuted.
    - A lens that returned only a description of the fix: write the literal text yourself and mark the row "fix written by me".
+   - **Fix completeness.** A fix that rewrites a passage keeps every statement in it that its own finding does not dispute (amounts, percentages, names, deadlines): restore anything it dropped, so applying the row alone never deletes a rule another row or a decision is about. A value the target does not give and the fix needs (a goal, a limit, a percentage) is a bracketed placeholder, `[X%]`, never a number a lens made up.
    - **Repeated** (only with settled points from a caller). A finding that contests a settled point without a fact the decision did not have leaves the table and goes to "Repeated" with the point's ID. It is not asked and not applied.
    - **Handed back** (only with hand-back categories from a caller). A finding that matches a category leaves the table and goes to "Handed back", with its category, severity, verification, problem, location, evidence and proposed fix. It is not asked and not applied. When in doubt whether it matches, hand it back.
 5. **Dedupe or conflict.** Two findings at the same location with the same root cause (semantic judgment, not string match):
