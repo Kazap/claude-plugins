@@ -1,6 +1,6 @@
 ---
 name: cross-model-review
-description: Use ONLY when the user explicitly asks, by name, for a cross-model review ("/adversarial:cross-model-review", "cross-model review", "revisão cross-model", "revisão entre modelos") — the adversarial review panel plus models from other families the user has access to (OpenAI through the Codex CLI, Google through the Antigravity CLI, and other makers such as DeepSeek, Zhipu or MiniMax through opencode). It sends content to those providers. Never for a generic request for an adversarial review or a review panel (that is adversarial:review), never started by another skill, and never on Claude's own initiative.
+description: Use ONLY when the user explicitly asks, by name, for a cross-model review ("/adversarial:cross-model-review", "cross-model review", or the same request in any language) — the adversarial review panel plus models from other families the user has access to (OpenAI through the Codex CLI, Google through the Antigravity CLI, and other makers such as DeepSeek, Zhipu or MiniMax through opencode). It sends content to those providers. Never for a generic request for an adversarial review or a review panel (that is adversarial:review), never started by another skill, and never on Claude's own initiative.
 argument-hint: "[path] [--fix] | setup | revoke <provider>"
 license: MIT
 compatibility: Claude Code with the Workflow tool, plus at least one of the Codex CLI, the Antigravity CLI or opencode, logged in (opencode's free tier needs no login).

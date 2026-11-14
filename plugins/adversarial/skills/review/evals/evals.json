@@ -331,8 +331,8 @@
     },
     {
       "id": 18,
-      "prompt": "/adversarial:review docs/plano.md — [the whole conversation is in Brazilian Portuguese]",
-      "expected_output": "Passes args.language = Brazilian Portuguese to the lenses and writes the report and questions in Portuguese.",
+      "prompt": "/adversarial:review docs/plan.md — [the whole conversation is in a language other than English]",
+      "expected_output": "Passes args.language naming the conversation's language to the lenses and writes the report, labels and questions in that language.",
       "files": [],
       "assertions": [
         {
@@ -341,7 +341,7 @@
         },
         {
           "name": "report_in_user_language",
-          "description": "Report and AskUserQuestion text are in Portuguese"
+          "description": "Report, labels and AskUserQuestion text are in the conversation's language, with no English label left"
         }
       ]
     },
@@ -367,8 +367,8 @@
     },
     {
       "id": 20,
-      "prompt": "/adversarial:review docs/api-spec.md — [the conversation is in Brazilian Portuguese; the spec is written in English]",
-      "expected_output": "Report, labels, and questions are in Portuguese. evidence and target_span stay as verbatim English quotes, and the Before/After replacement text is in English, matching the document.",
+      "prompt": "/adversarial:review docs/api-spec.md — [the conversation is in a language other than English; the spec is written in English]",
+      "expected_output": "Report, labels, and questions are in the conversation's language. evidence and target_span stay as verbatim English quotes, and the Before/After replacement text is in English, matching the document.",
       "files": [],
       "assertions": [
         {
@@ -381,7 +381,7 @@
         },
         {
           "name": "report_in_user_language",
-          "description": "Problem descriptions, labels, and questions are in Portuguese"
+          "description": "Problem descriptions, labels, and questions are in the conversation's language"
         }
       ]
     },

@@ -1,6 +1,6 @@
 ---
 name: review
-description: Use when the user asks for an adversarial review, a review panel, a red-team or skeptical critique of a design proposal, plan, spec, diff, or code — in any language (e.g. "revisão adversarial", "painel de revisão") — or when another skill's instructions call for adversarial:review on an artifact it produced. Not for a quick routine look at a small change.
+description: Use when the user asks for an adversarial review, a review panel, a red-team or skeptical critique of a design proposal, plan, spec, diff, or code, in any language, or when another skill's instructions call for adversarial:review on an artifact it produced. Not for a quick routine look at a small change.
 argument-hint: "[path] [--fix]"
 license: MIT
 compatibility: Claude Code with the Workflow tool (multi-agent script orchestration). Without it, do not run.
@@ -16,7 +16,7 @@ Read-only review agents whose lenses are derived from the content under review, 
 
 Without the `Workflow` tool, do not run: there is no fallback with per-agent effort control and schema-validated output.
 
-**Language.** Write every report, question, and status message in the user's language, and pass that language to the lenses as free text in `args.language` (e.g. "Brazilian Portuguese"). Severity and verification labels are translated in the report, and so are section titles (in Portuguese: "crítica", "alta", "média", "baixa", "confirmada pelo cético", "Correções", "Antes:", "Depois:", "correção ajustada por mim", "Combinado", "a lente", "as lentes"; never "critical", "high", "skeptic", "Fixes", "fix", "Combined", "Before:", "After:" or "o lente"). Quotes (`evidence`, `target_span`) stay verbatim, and replacement text keeps the language and register of the document under review.
+**Language.** Write every report, question, and status message in the user's language, and pass that language to the lenses as free text in `args.language`. Translate every label the person sees: severities, verification values and marks, section titles, the before/after labels, the combined block's title and the word for a lens, following that language's grammar (gender, number). Never leave an English label in a report written in another language. Quotes (`evidence`, `target_span`) stay verbatim, and replacement text keeps the language and register of the document under review.
 
 **Keep the session clean.** Read this skill's reference files and any result file with the `Read` tool (a large result file as Phase 5 step 1 says), never with `cat`, `head` or a script of your own that prints them: those put the whole text into the conversation the user sees. While a subagent or the workflow works, wait for its notification: never run a command only to wait or poll (`sleep`, `echo`, `ls`, `ReadNotifications`), and never schedule a wakeup, a loop or a cron job (`ScheduleWakeup`, `CronCreate`, `/loop`). A review never restarts itself; only the user starts another one.
 

@@ -96,12 +96,12 @@ like opencode was left out.
   name with the level in parentheses read as reasoning effort (for example, "Gemini 4 Argon, medium
   reasoning effort"). When the list has
   more models, the question text names them and says that any of them can be typed in the free-text
-  answer the tool adds below the options; never call that answer "Other" or "Outros" in the
-  question, since "Other" names the opencode option below. When Codex's list comes back empty, offer
+  answer the tool adds below the options; never give that answer the name of the opencode
+  "Other" option below, in any language. When Codex's list comes back empty, offer
   only "Codex default" and say that a model id can be typed in the free-text answer.
 - The opencode makers, as multi-select questions: "Which makers should opencode use in this
-  project (1/3)? Each one checked is authorized.", in the user's language (in Portuguese, "Quais
-  fabricantes…", never "makers"), with the question's position and the total. **Every** provider
+  project (1/3)? Each one checked is authorized.", in the user's language, with every word translated, "makers"
+  included, and with the question's position and the total. **Every** provider
   worked out in step 1 from opencode gets an option, with nothing left out to save a question: each
   identified maker (`providers.md`, "opencode makers") that has at least one non-Claude model, and,
   when any model's maker is not identified, one last option, **"Other opencode models (maker not
@@ -118,8 +118,8 @@ when it applies, must be in some question.
 **Option descriptions stay short**, one line, the same pattern in every option: the model id (or
 "model chosen next: <model>, <model>" when the maker has several), then `·` and the tags that apply:
 "free" for a model whose name ends in `-free`, "via OpenCode Zen" for a model under the `opencode/`
-route, and for the "Other" option "maker not identified; each model's route is named". In
-Portuguese: `opencode/deepseek-v4.1-flash-free · grátis · via OpenCode Zen`.
+route, and for the "Other" option "maker not identified; each model's route is named". For
+example: `opencode/deepseek-v4.1-flash-free · free · via OpenCode Zen`, with the tags translated.
 
 **Extra notices, once in the question text, never repeated in each option** (D-57): when any option
 of that question has the "via OpenCode Zen" tag, "Models via OpenCode Zen go through opencode's own

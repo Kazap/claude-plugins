@@ -16,7 +16,7 @@ The script reads everything run-specific from `args`, passed as a JSON object va
 
 | Field | Required | What it holds |
 |---|---|---|
-| `language` | yes | Review language as free text, e.g. "Brazilian Portuguese" |
+| `language` | yes | Review language as free text: the user's language |
 | `paths` | one of `paths`/`content` | Absolute paths of the target files |
 | `content` | one of `paths`/`content` | The conversation-only target, verbatim |
 | `facts` | no | Verified facts as a markdown list |
